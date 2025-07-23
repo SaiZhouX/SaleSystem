@@ -1,0 +1,95 @@
+/* pages/add-fish/add-fish.wxss */
+.container {
+  padding: 30rpx;
+  box-sizing: border-box;
+  min-height: 100vh;
+  background: #f5f5f5;
+}
+
+.form-item {
+  display: flex;
+  align-items: center;
+  padding: 20rpx 45rpx;
+  border-bottom: 1rpx solid #eee;
+  font-size: 28rpx;
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 120rpx;
+  overflow: hidden;
+}
+
+.item-label {
+  width: 50rpx;
+  white-space: nowrap;
+  flex-shrink: 0;
+  padding-right: 15rpx;
+  color: #333;
+  font-weight: 500;
+  text-overflow: clip;
+}
+.picker,
+input {
+  flex: 1;
+  min-width: 40rpx;
+  padding: 20rpx 15rpx;
+  margin-left: 80rpx;
+  color: #333;
+  height: 80rpx;
+  box-sizing: border-box;
+  background: #fff;
+  border: 1rpx solid #ddd;
+  border-radius: 8rpx;
+}
+
+.price-input {
+  min-width: 45rpx;
+  max-width: 180rpx;
+  flex: none;
+}
+
+.upload-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.preview-image {
+  width: 200rpx;
+  height: 200rpx;
+  margin-bottom: 20rpx;
+  border: 1rpx solid #eee;
+}
+
+.upload-btn {
+  background-color: #f5f5f5;
+  color: #333;
+  width: 180rpx;
+}
+
+.barcode-container {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: 20rpx 0;
+}
+
+#barcode {
+  width: 400rpx;
+  height: 150rpx;
+  margin-right: 20rpx;
+}
+
+.barcode-text {
+  margin-top: 10rpx;
+  font-size: 26rpx;
+  color: #666;
+}
+
+.submit-btn {
+  margin-top: 60rpx;
+  background-color: #1aad19;
+  color: #fff;
+}

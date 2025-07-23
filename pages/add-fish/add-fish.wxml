@@ -1,0 +1,30 @@
+<!--pages/add-fish/add-fish.wxml-->
+<view class="container">
+  <form bindsubmit="formSubmit">
+    <view class="form-item">
+      <text class="item-label">进货日期</text>
+      <picker mode="date" value="{{date}}" bindchange="bindDateChange">
+        <view class="picker">{{date}}</view>
+      </picker>
+    </view>
+    <view class="form-item">
+      <text class="item-label">单价</text>
+      <input class="price-input" name="price" type="digit" placeholder="请输入单价" />
+    </view>
+    <view class="form-item">
+      <text class="item-label">照片</text>
+      <view class="upload-container">
+        <image src="{{photoPath || '/images/placeholder.svg'}}" class="preview-image" />
+        <button bindtap="takePhoto" class="upload-btn">拍照上传</button>
+      </view>
+    </view>
+    <view class="form-item">
+      <text class="item-label">条形码</text>
+      <view class="barcode-container">
+        <view id="barcode"></view>
+        <text class="barcode-text">{{barcode}}</text>
+      </view>
+    </view>
+    <button form-type="submit" class="submit-btn">确认添加</button>
+  </form>
+</view>

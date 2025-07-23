@@ -1,0 +1,76 @@
+.tab-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 100rpx;
+  background: white;
+  display: flex;
+  padding-bottom: env(safe-area-inset-bottom);
+  align-items: center;
+  justify-content: space-around;
+  padding: 0 20rpx;
+}
+
+.tab-bar-border {
+  background-color: rgba(0, 0, 0, 0.33);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 1rpx;
+  transform: scaleY(0.5);
+}
+
+.tab-bar-item {
+  flex: 1;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.tab-bar-item cover-image {
+  width: 58rpx;
+  height: 58rpx;
+}
+
+.tab-bar-item cover-view {
+  font-size: 22rpx;
+  color: #999;
+  margin-top: 4rpx;
+}
+.tab-bar-item.active cover-view {
+  color: #FF6B00;
+}
+.tab-bar-item.active cover-image {
+  filter: brightness(0) saturate(100%) invert(53%) sepia(98%) saturate(1000%) hue-rotate(355deg) brightness(105%) contrast(105%);
+  transform: scale(1.05);
+}
+
+.tab-bar-bulge {
+  width: 112rpx;
+  height: 112rpx;
+  background-color: #FF6B00;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: -16rpx;
+  box-shadow: 0 4rpx 12rpx rgba(255, 107, 0, 0.3);
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+}
+
+.tab-bar-bulge cover-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.3);
+  position: relative;
+  left: -1rpx;
+  top: -1rpx;
+  margin: -5rpx;
+}

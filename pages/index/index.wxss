@@ -1,0 +1,127 @@
+/* pages/index/index.wxss */
+.container {
+  padding: 20rpx;
+  box-sizing: border-box;
+  background-color: #f4f4f4;
+  min-height: 100vh;
+}
+
+.dashboard {
+  width: 100%;
+  margin-bottom: 30rpx;
+}
+
+.summary-card {
+  display: flex;
+  justify-content: space-around;
+  background-color: white;
+  padding: 40rpx 20rpx;
+  border-radius: 16rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.05);
+}
+
+.scan-button-container {
+  padding: 20rpx;
+}
+
+.scan-button {
+  background-color: #3498db;
+  color: white;
+  border-radius: 8rpx;
+}
+
+.income, .expense {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.label {
+  font-size: 28rpx;
+  color: #888;
+  margin-bottom: 10rpx;
+}
+
+.amount {
+  font-size: 40rpx;
+  font-weight: bold;
+}
+
+.income .amount {
+  color: #28a745;
+}
+
+.expense .amount {
+  color: #dc3545;
+}
+
+.fish-list-container {
+  width: 100%;
+  background-color: white;
+  padding: 20rpx;
+  border-radius: 16rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.05);
+}
+
+.list-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  margin-bottom: 20rpx;
+  display: block;
+}
+
+.fish-list {
+  height: calc(100vh - 450rpx); /* Adjust height based on your layout */
+}
+
+.fish-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 25rpx 20rpx;
+  border-bottom: 1rpx solid #eee;
+}
+
+.fish-info .fish-id {
+  font-size: 28rpx;
+  font-weight: 500;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 400rpx;
+}
+
+.fish-info .purchase-date {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.fish-status {
+  padding: 8rpx 16rpx;
+  border-radius: 8rpx;
+  font-size: 24rpx;
+  color: white;
+}
+
+.fish-status.healthy {
+  background-color: #28a745;
+}
+
+.fish-status.sick {
+  background-color: #ffc107;
+}
+
+.fish-status.dead {
+  background-color: #6c757d;
+}
+
+.fish-status.sold {
+  background-color: #17a2b8;
+}
+
+.empty-list {
+  text-align: center;
+  padding: 50rpx;
+  color: #999;
+}

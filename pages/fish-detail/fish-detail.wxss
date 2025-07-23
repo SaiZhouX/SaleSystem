@@ -1,0 +1,153 @@
+/* pages/fish-detail/fish-detail.wxss */
+.container {
+  padding: 20rpx;
+  background-color: #f4f4f4;
+  min-height: 100vh;
+}
+
+.detail-card {
+  background-color: #fff;
+  border-radius: 16rpx;
+  padding: 20rpx;
+  margin-bottom: 20rpx;
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 15rpx 0;
+  font-size: 28rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.detail-item:last-child {
+  border-bottom: none;
+}
+
+.label {
+  color: #666;
+}
+
+.value {
+  color: #333;
+}
+
+.photo-section {
+  margin-bottom: 20rpx;
+  text-align: center;
+}
+
+.fish-photo {
+  width: 100%;
+  height: 400rpx;
+  border-radius: 16rpx;
+  background-color: #eee;
+}
+
+.photo-btn {
+  background-color: #3498db;
+  color: #fff;
+  margin: 20rpx;
+}
+
+.status-update-section {
+  background-color: #fff;
+  border-radius: 16rpx;
+  padding: 20rpx;
+  margin-bottom: 20rpx;
+}
+
+.picker {
+  padding: 20rpx;
+  border: 1rpx solid #eee;
+  border-radius: 8rpx;
+  margin-bottom: 20rpx;
+}
+
+.notes-input {
+  width: auto;
+  padding: 20rpx;
+  border: 1rpx solid #eee;
+  border-radius: 8rpx;
+  margin-bottom: 20rpx;
+}
+
+.update-btn {
+  background-color: #1aad19;
+  color: #fff;
+}
+
+.history-section {
+  background-color: #fff;
+  border-radius: 16rpx;
+  padding: 20rpx;
+  margin-bottom: 20rpx;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  margin-bottom: 20rpx;
+}
+
+.log-list {
+  
+}
+
+.log-item {
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.log-item:last-child {
+  border-bottom: none;
+}
+
+.log-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10rpx;
+}
+
+.log-status {
+  font-weight: bold;
+}
+
+.status-healthy { color: #1aad19; }
+.status-sick { color: #f39c12; }
+.status-dead { color: #e74c3c; }
+.status-sold { color: #3498db; }
+
+.log-date {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.log-notes {
+  font-size: 28rpx;
+  color: #666;
+}
+
+.scan-btn {
+  margin-top: 40rpx;
+  background-color: #3498db;
+  color: #fff;
+}
+
+.barcode-container {
+  margin-top: 40rpx;
+  text-align: center;
+}
+
+.barcode-img {
+  width: 80%;
+  margin: 0 auto;
+}
+
+.generate-btn {
+  width: 100%;
+  margin-top: 20rpx;
+  background-color: #ffc300;
+  color: #000;
+}

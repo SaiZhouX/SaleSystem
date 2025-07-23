@@ -1,0 +1,34 @@
+/* pages/add/add.wxss */
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background-color: #f4f4f4;
+}
+
+.add-options {
+  display: flex;
+  flex-direction: column;
+}
+
+.add-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 600rpx;
+  height: 120rpx;
+  margin: 20rpx 0;
+  background-color: #ffffff;
+  border-radius: 16rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.08);
+  font-size: 32rpx;
+  color: #333;
+}
+
+.button-icon {
+  width: 60rpx;
+  height: 60rpx;
+  margin-right: 20rpx;
+}

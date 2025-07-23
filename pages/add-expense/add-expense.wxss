@@ -1,0 +1,26 @@
+/* pages/add-expense/add-expense.wxss */
+.container {
+  padding: 40rpx;
+}
+
+.form-item {
+  display: flex;
+  align-items: center;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #eee;
+  font-size: 30rpx;
+}
+
+.item-label {
+  width: 150rpx;
+}
+
+input {
+  flex: 1;
+}
+
+.submit-btn {
+  margin-top: 60rpx;
+  background-color: #1aad19;
+  color: #fff;
+}

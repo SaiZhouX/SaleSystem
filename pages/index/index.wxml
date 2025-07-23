@@ -1,0 +1,37 @@
+<!--index.wxml-->
+<view class="container">
+  <view class="dashboard">
+    <view class="summary-card">
+      <view class="income">
+        <text class="label">总收入</text>
+        <text class="amount">¥{{totalIncome}}</text>
+      </view>
+      <view class="expense">
+        <text class="label">总支出</text>
+        <text class="amount">¥{{totalExpense}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="scan-button-container">
+    <button class="scan-button" bindtap="scanCode">扫码查询</button>
+  </view>
+
+  <view class="fish-list-container">
+    <text class="list-title">库存概览</text>
+    <scroll-view scroll-y class="fish-list">
+      <view wx:for="{{fishList}}" wx:key="id" class="fish-item" bindtap="goToFishDetail" data-id="{{item.id}}">
+        <view class="fish-info">
+          <text class="fish-id">ID: {{item.id}}</text>
+          <text class="purchase-date">进货日期: {{item.purchase_date}}</text>
+        </view>
+        <view class="fish-status {{item.status}}">{{item.status}}</view>
+      </view>
+      <view wx:if="{{fishList.length == 0}}" class="empty-list">
+        <text>暂无库存</text>
+      </view>
+    </scroll-view>
+  </view>
+
+  <tabbar tabbar="{{tabbar}}"></tabbar>
+</view>

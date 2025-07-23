@@ -1,0 +1,14 @@
+<!--pages/add/add.wxml-->
+<view class="container">
+  <view class="add-options">
+    <button class="add-button" bindtap="navigateToAddFish">
+      <image class="button-icon" src="/images/fish_icon.png"/>
+      <text>添加新鱼信息</text>
+    </button>
+    <button class="add-button" bindtap="navigateToAddExpense">
+      <image class="button-icon" src="/images/expense_icon.png"/>
+      <text>添加固定支出</text>
+    </button>
+  </view>
+  <tabbar tabbar="{{tabbar}}"></tabbar>
+</view>

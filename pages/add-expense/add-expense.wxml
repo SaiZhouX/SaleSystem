@@ -1,0 +1,14 @@
+<!--pages/add-expense/add-expense.wxml-->
+<view class="container">
+  <form bindsubmit="formSubmit">
+    <view class="form-item">
+      <text class="item-label">支出项目</text>
+      <input name="item" type="text" placeholder="请输入支出项目" />
+    </view>
+    <view class="form-item">
+      <text class="item-label">支出金额</text>
+      <input name="amount" type="digit" placeholder="请输入支出金额" />
+    </view>
+    <button form-type="submit" class="submit-btn">确认添加</button>
+  </form>
+</view>
