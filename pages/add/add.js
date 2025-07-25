@@ -19,6 +19,10 @@ Page({
   },
 
   navigateToAddExpense() {
-    wx.navigateTo({ url: '/pages/addExpense/addExpense' });
+    wx.navigateTo({ url: '/pages/add-expense/add-expense' });
+  },
+
+  navigateToBatchAddFish() {
+    wx.navigateTo({ url: '/pages/batch-add-fish/batch-add-fish' });
   }
 })

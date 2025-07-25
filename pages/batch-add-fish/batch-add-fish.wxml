@@ -1,0 +1,22 @@
+<!--pages/batch-add-fish/batch-add-fish.wxml-->
+<view class="container">
+  <form bindsubmit="formSubmit">
+    <view class="form-item">
+      <text class="item-label">平均价格</text>
+      <input name="averagePrice" type="digit" placeholder="请输入平均价格" />
+    </view>
+    <view class="form-item">
+      <text class="item-label">鱼的数量</text>
+      <input name="quantity" type="digit" placeholder="请输入鱼的数量" />
+    </view>
+    <view class="form-item">
+      <text class="item-label">添加日期</text>
+      <picker name="date" mode="date" start="2020-01-01" end="2030-12-31">
+        <view class="picker">
+          {{dateValue || '请选择添加日期'}}
+        </view>
+      </picker>
+    </view>
+    <button form-type="submit" class="submit-btn">批量添加</button>
+  </form>
+</view>

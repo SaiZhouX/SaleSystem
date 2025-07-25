@@ -3,13 +3,13 @@
   <form bindsubmit="formSubmit">
     <view class="form-item">
       <text class="item-label">进货日期</text>
-      <picker mode="date" value="{{date}}" bindchange="bindDateChange">
-        <view class="picker">{{date}}</view>
+      <picker mode="date" value="{{purchaseDate}}" bindchange="bindDateChange">
+        <view class="picker">{{purchaseDate}}</view>
       </picker>
     </view>
     <view class="form-item">
       <text class="item-label">单价</text>
-      <input class="price-input" name="price" type="digit" placeholder="请输入单价" />
+      <input class="price-input" name="purchasePrice" type="digit" placeholder="请输入单价" />
     </view>
     <view class="form-item">
       <text class="item-label">照片</text>

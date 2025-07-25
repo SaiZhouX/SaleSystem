@@ -19,7 +19,7 @@
 }
 
 .item-label {
-  width: 50rpx;
+  width: 150rpx;
   white-space: nowrap;
   flex-shrink: 0;
   padding-right: 15rpx;
@@ -32,7 +32,7 @@ input {
   flex: 1;
   min-width: 40rpx;
   padding: 20rpx 15rpx;
-  margin-left: 80rpx;
+  margin-left: 20rpx;
   color: #333;
   height: 80rpx;
   box-sizing: border-box;

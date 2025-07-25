@@ -1,0 +1,86 @@
+.container {
+  padding-bottom: 100rpx;
+}
+
+.list-header {
+  padding: 20rpx 30rpx;
+  border-bottom: 1rpx solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.list-title {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.cleanup-btn {
+  background-color: #f5f5f5;
+  color: #666;
+  border-radius: 8rpx;
+  padding: 8rpx 20rpx;
+  font-size: 24rpx;
+}
+
+.fish-list {
+  padding: 0 30rpx;
+}
+
+.fish-item {
+  display: flex;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #f5f5f5;
+}
+
+.fish-photo {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 8rpx;
+  margin-right: 20rpx;
+}
+
+.fish-info {
+  flex: 1;
+}
+
+.fish-id {
+  display: block;
+  font-size: 28rpx;
+  color: #333;
+  margin-bottom: 8rpx;
+}
+
+.fish-date,
+.fish-price {
+  display: block;
+  font-size: 24rpx;
+  color: #666;
+  margin-bottom: 4rpx;
+}
+
+.fish-status {
+  font-size: 24rpx;
+  padding: 4rpx 12rpx;
+  border-radius: 16rpx;
+  display: inline-block;
+  margin-top: 8rpx;
+}
+
+.fish-status:not(.isSold) {
+  background-color: #e6f7ee;
+  color: #00a854;
+}
+
+.isSold {
+  background-color: #fff2e8;
+  color: #ff7800;
+}
+
+.empty-tip {
+  text-align: center;
+  padding: 100rpx 0;
+  color: #999;
+  font-size: 28rpx;
+}

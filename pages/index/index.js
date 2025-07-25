@@ -21,14 +21,19 @@ Page({
       method: 'GET',
       success: (res) => {
         console.log('API response:', res.data);
-        if (res.statusCode === 200 && res.data) {
+        if (res.statusCode === 200 && res.data && res.data.length > 0) {
+          // 处理API返回数据，统一日期字段
+          const processedData = res.data.map(item => ({
+            ...item,
+            purchase_date: item.purchase_date || item.purchaseDate || ''
+          }));
           this.setData({
-            fishList: res.data
+            fishList: processedData
           });
-          wx.setStorageSync('fishList', res.data); // 同步到本地缓存
+          wx.setStorageSync('fishList', processedData); // 仅当API返回有效数据时同步到本地缓存
         } else {
-          console.log('API request failed, loading local data');
-        this.loadLocalData();
+          console.log('API request failed or returned empty data, loading local data');
+          this.loadLocalData();
         }
         this.updateSummary();
       },
@@ -43,8 +48,13 @@ Page({
   loadLocalData() {
         console.log('Loading local data');
     const fishList = wx.getStorageSync('fishList') || [];
+    // 处理本地数据，统一日期字段
+    const processedData = fishList.map(item => ({
+      ...item,
+      purchase_date: item.purchase_date || item.purchaseDate || ''
+    }));
     this.setData({
-      fishList: fishList
+      fishList: processedData
     });
     wx.showToast({
       title: '已加载本地数据',
@@ -64,6 +74,12 @@ Page({
     const fishId = e.currentTarget.dataset.id;
     wx.navigateTo({
       url: `/pages/fish-detail/fish-detail?id=${fishId}`
+    });
+  },
+
+  goToFishList() {
+    wx.navigateTo({
+      url: '/pages/fish-list/fish-list'
     });
   },
 

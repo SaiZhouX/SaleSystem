@@ -22,12 +22,23 @@
 
 .scan-button-container {
   padding: 20rpx;
+  display: flex;
+  gap: 20rpx;
+  flex-direction: column;
 }
 
 .scan-button {
   background-color: #3498db;
   color: white;
   border-radius: 8rpx;
+  padding: 20rpx 0;
+}
+
+.list-button {
+  background-color: #28a745;
+  color: white;
+  border-radius: 8rpx;
+  padding: 20rpx 0;
 }
 
 .income, .expense {
@@ -118,6 +129,10 @@
 
 .fish-status.sold {
   background-color: #17a2b8;
+}
+
+.fish-status.instock {
+  background-color: #28a745;
 }
 
 .empty-list {

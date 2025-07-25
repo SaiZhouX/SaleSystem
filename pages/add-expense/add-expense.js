@@ -5,12 +5,13 @@ Page({
    * 页面的初始数据
    */
   data: {
-
+    dateValue: ''
   },
 
   formSubmit: function (e) {
-    const { item, amount } = e.detail.value;
-    if (!item || !amount) {
+    const { item, amount, quantity, date } = e.detail.value;
+    const qty = quantity ? parseInt(quantity) : 1;
+    if (!item || !amount || !date) {
       wx.showToast({
         title: '请填写完整信息',
         icon: 'none'
@@ -22,13 +23,15 @@ Page({
     expenseList.push({
       item: item,
       amount: parseFloat(amount),
-      date: new Date().toISOString()
+      quantity: qty,
+      total: parseFloat(amount) * qty,
+      date: date
     });
     wx.setStorageSync('expenseList', expenseList);
 
     // 更新总支出
     const totalExpense = wx.getStorageSync('totalExpense') || 0;
-    wx.setStorageSync('totalExpense', totalExpense + parseFloat(amount));
+    wx.setStorageSync('totalExpense', totalExpense + parseFloat(amount) * qty);
 
     wx.showToast({
       title: '添加成功',

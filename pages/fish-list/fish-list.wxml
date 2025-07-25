@@ -1,0 +1,22 @@
+<view class="container">
+  <view class="list-header">
+    <text class="list-title">鱼信息列表</text>
+    <button class="cleanup-btn" bindtap="clearAllFish">清理所有</button>
+  </view>
+  <view class="fish-list">
+    <block wx:for="{{fishList}}" wx:key="id">
+      <view class="fish-item">
+        <view class="fish-image">无图片</view>
+        <view class="fish-info">
+          <view class="fish-id">编号: {{item.id}}</view>
+          <view class="fish-date">进货日期: {{item.purchase_date || '未知日期'}}</view>
+          <view class="fish-price">单价：{{item.formattedPrice}}</view>
+          <view class="fish-status">{{item.status === 'instock' ? '库存中' : '已售出'}}</view>
+        </view>
+      </view>
+    </block>
+    <view wx:if="{{fishList.length === 0}}" class="empty-tip">
+      <text>暂无鱼信息数据</text>
+    </view>
+  </view>
+</view>

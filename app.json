@@ -5,7 +5,9 @@
     "pages/my/my",
     "pages/add-fish/add-fish",
     "pages/add-expense/add-expense",
-    "pages/fish-detail/fish-detail"
+    "pages/fish-detail/fish-detail",
+    "pages/batch-add-fish/batch-add-fish",
+    "pages/fish-list/fish-list"
   ],
   "window":{
     "backgroundTextStyle":"light",
