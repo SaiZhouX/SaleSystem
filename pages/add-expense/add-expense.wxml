@@ -2,22 +2,24 @@
 <view class="container">
   <form bindsubmit="formSubmit">
     <view class="form-item">
-      <text class="item-label">支出项目</text>
-      <input name="item" type="text" placeholder="请输入支出项目" />
+      <text class="item-label">项目</text>
+      <picker name="item" range="{{expenseItems}}" value="{{selectedItemIndex}}" bindchange="bindItemChange">
+        <view class="picker-input">{{expenseItems[selectedItemIndex] || '请选择项目'}}</view>
+      </picker>
     </view>
     <view class="form-item">
-      <text class="item-label">支出金额</text>
-      <input name="amount" type="digit" placeholder="请输入支出金额" />
+      <text class="item-label">金额</text>
+      <input name="amount" type="digit" placeholder="请输入金额" />
     </view>
     <view class="form-item">
-      <text class="item-label">支出数量</text>
-      <input name="quantity" type="digit" placeholder="请输入支出数量" />
+      <text class="item-label">数量</text>
+      <input name="quantity" type="digit" placeholder="请输入数量" />
     </view>
     <view class="form-item">
-      <text class="item-label">支出日期</text>
+      <text class="item-label">日期</text>
       <picker name="date" mode="date" start="2020-01-01" end="2030-12-31">
         <view class="picker">
-          {{dateValue || '请选择支出日期'}}
+          {{dateValue || '请选择日期'}}
         </view>
       </picker>
     </view>
