@@ -1,7 +1,7 @@
 <view class="container">
   <view class="list-header">
-    <text class="list-title">鱼信息列表</text>
-    <button class="cleanup-btn" bindtap="clearAllFish">清理所有</button>
+    <text class="list-title">信息列表</text>
+
   </view>
   <view class="fish-list">
     <block wx:for="{{fishList}}" wx:key="id">

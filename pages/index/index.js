@@ -108,5 +108,32 @@ Page({
         });
       }
     });
+  },
+
+  clearAllData: function() {
+    wx.showModal({
+      title: '确认清理',
+      content: '确定要清除所有数据吗？此操作将删除所有鱼信息、收入和支出记录，不可恢复。',
+      success: (res) => {
+        if (res.confirm) {
+          // 清除所有本地存储数据
+          wx.setStorageSync('fishList', []);
+          wx.setStorageSync('totalIncome', 0);
+          wx.setStorageSync('totalExpense', 0);
+          
+          // 更新页面数据
+          this.setData({
+            fishList: [],
+            totalIncome: '0.00',
+            totalExpense: '0.00'
+          });
+          
+          wx.showToast({
+            title: '所有数据已清除',
+            icon: 'success'
+          });
+        }
+      }
+    });
   }
 })
