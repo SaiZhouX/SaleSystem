@@ -1,5 +1,30 @@
 /* pages/add-fish/add-fish.wxss */
+.header {
+  position: absolute;
+  top: 20rpx;
+  right: 30rpx;
+  width: auto !important;
+}
+
+.header .batch-add-btn {
+  background-color: #1aad19;
+  color: white;
+  height: 88rpx;
+  font-size: 28rpx;
+  border-radius: 8rpx;
+  padding: 0;
+  margin: 0;
+  border: none;
+  box-sizing: border-box;
+  min-width: 0 !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  white-space: nowrap;
+}
 .container {
+  position: relative;
+
   padding: 30rpx;
   box-sizing: border-box;
   min-height: 100vh;
@@ -88,8 +113,21 @@ input {
   color: #666;
 }
 
-.submit-btn {
+form .submit-btn {
   margin-top: 60rpx;
   background-color: #1aad19;
   color: #fff;
+  height: 88rpx;
+  font-size: 32rpx;
+  padding: 0;
+  margin: 0 auto;
+  border: none;
+  border-radius: 8rpx;
+  box-sizing: border-box;
+  line-height: 88rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 0 !important;
+  white-space: nowrap;
 }

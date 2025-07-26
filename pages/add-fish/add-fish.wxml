@@ -1,5 +1,8 @@
 <!--pages/add-fish/add-fish.wxml-->
 <view class="container">
+  <view class="header">
+    <button class="batch-add-btn" bindtap="navigateToBatchAddFish" style="width: 160rpx !important; box-sizing: border-box !important; padding: 0 !important;">批量添加</button>
+  </view>
   <form bindsubmit="formSubmit">
     <view class="form-item">
       <text class="item-label">进货日期</text>
@@ -25,6 +28,6 @@
         <text class="barcode-text">{{barcode}}</text>
       </view>
     </view>
-    <button form-type="submit" class="submit-btn">确认添加</button>
+    <button form-type="submit" class="submit-btn" style="width: 320rpx !important; box-sizing: border-box !important; padding: 0 !important;">确认添加</button>
   </form>
 </view>
