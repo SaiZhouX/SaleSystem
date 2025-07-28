@@ -73,6 +73,12 @@ input {
   flex: none;
 }
 
+.notes-input {
+  height: 200rpx;
+  min-height: 200rpx;
+  box-sizing: border-box;
+}
+
 .upload-container {
   flex: 1;
   display: flex;

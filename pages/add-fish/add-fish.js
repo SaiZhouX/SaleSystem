@@ -13,9 +13,14 @@ Page({
   onLoad() {
     // 生成唯一ID
     const fishId = Math.random().toString(36).substr(2, 10) + Date.now().toString(36);
-    this.setData({
+    const batchNumber = 'B' + Date.now().toString(36).substr(2, 6);
+      // 生成barcode并记录日志
+      const generatedBarcode = fishId.substring(0, 12).toUpperCase();
+      console.log('生成的barcode数据:', generatedBarcode);
+      this.setData({
       fishId: fishId,
-      barcode: fishId,
+        batchNumber: batchNumber,
+        barcode: fishId.substring(0, 12).toUpperCase(),
       // 设置默认日期为今天
       purchaseDate: new Date().toISOString().split('T')[0]
     });
@@ -55,8 +60,10 @@ Page({
     // 创建新鱼信息对象
     const newFish = {
       id: this.data.fishId,
+      batch: this.data.batchNumber,
       purchase_date: purchaseDate,
       purchasePrice: price,
+      barcode: this.data.barcode,
       status: 'instock',
       timestamp: Date.now()
     };
@@ -67,6 +74,7 @@ Page({
     wx.setStorageSync('fishList', fishList);
 
     // 同步到服务器
+    console.log('提交到服务器的数据:', newFish);
     wx.request({
       url: api.addFish,
       method: 'POST',

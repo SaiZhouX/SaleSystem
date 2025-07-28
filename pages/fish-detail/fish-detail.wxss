@@ -1,15 +1,18 @@
 /* pages/fish-detail/fish-detail.wxss */
 .container {
-  padding: 20rpx;
+  padding: 0;
   background-color: #f4f4f4;
   min-height: 100vh;
+  width: 100%;
 }
 
 .detail-card {
   background-color: #fff;
   border-radius: 16rpx;
   padding: 20rpx;
-  margin-bottom: 20rpx;
+  margin: 20rpx;
+  width: calc(100% - 40rpx);
+  box-sizing: border-box;
 }
 
 .detail-item {
@@ -33,8 +36,10 @@
 }
 
 .photo-section {
-  margin-bottom: 20rpx;
+  margin: 0 20rpx 20rpx;
   text-align: center;
+  width: calc(100% - 40rpx);
+  box-sizing: border-box;
 }
 
 .fish-photo {
@@ -54,34 +59,44 @@
   background-color: #fff;
   border-radius: 16rpx;
   padding: 20rpx;
-  margin-bottom: 20rpx;
+  margin: 0 20rpx 20rpx;
+  width: calc(100% - 40rpx);
+  box-sizing: border-box;
 }
 
 .picker {
+  width: 100%;
   padding: 20rpx;
   border: 1rpx solid #eee;
   border-radius: 8rpx;
   margin-bottom: 20rpx;
+  box-sizing: border-box;
 }
 
 .notes-input {
-  width: auto;
+  width: 100%;
+  height: 150rpx;
+  min-height: 150rpx;
   padding: 20rpx;
   border: 1rpx solid #eee;
   border-radius: 8rpx;
   margin-bottom: 20rpx;
+  box-sizing: border-box;
 }
 
 .update-btn {
   background-color: #1aad19;
   color: #fff;
+  width: 100%;
 }
 
 .history-section {
   background-color: #fff;
   border-radius: 16rpx;
   padding: 20rpx;
-  margin-bottom: 20rpx;
+  margin: 0 20rpx 20rpx;
+  width: calc(100% - 40rpx);
+  box-sizing: border-box;
 }
 
 .section-title {
@@ -133,11 +148,23 @@
   margin-top: 40rpx;
   background-color: #3498db;
   color: #fff;
+  width: 100%;
 }
 
 .barcode-container {
-  margin-top: 40rpx;
-  text-align: center;
+    margin: 40rpx 20rpx 0;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    padding: 20rpx 0;
+    width: calc(100% - 40rpx);
+    box-sizing: border-box;
+  }
+
+  .barcode-canvas {
+  width: 100%;
+  height: 120rpx;
+  border: 1rpx solid #f0f0f0;
 }
 
 .barcode-img {

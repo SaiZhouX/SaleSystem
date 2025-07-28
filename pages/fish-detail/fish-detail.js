@@ -1,6 +1,6 @@
 // pages/fish-detail/fish-detail.js
 const util = require('../../utils/util.js');
-const barcode = require('../../utils/wxbarcode.js');
+const wxbarcode = require('../../utils/wxbarcode.js');
 const api = require('../../utils/api.js');
 
 Page({
@@ -18,8 +18,50 @@ Page({
       method: 'GET',
       success: (res) => {
         if (res.statusCode === 200 && res.data) {
+          console.log('API返回的原始数据:', res.data);
           this.setData({
             fishInfo: res.data
+          }, () => {
+            console.log('setData回调中的fishInfo:', this.data.fishInfo);
+            // 使用setData回调确保数据已更新
+            if (this.data.fishInfo) {
+              wx.nextTick(() => {
+                console.log('完整fishInfo数据:', this.data.fishInfo);
+                  const barcodeData = this.data.fishInfo.barcode || this.data.fishInfo.id;
+                  console.log('条形码数据源:', {barcode: this.data.fishInfo.barcode, id: this.data.fishInfo.id, barcodeData});
+                // 使用传统canvas API获取上下文
+                  const ctx = wx.createCanvasContext('barcode');
+                  console.log('传统API获取的上下文:', ctx);
+                  console.log('上下文方法:', ctx ? Object.keys(ctx) : 'null');
+                  if (ctx) {
+                    wx.nextTick(() => {
+                       console.log('beginPath方法存在性:', typeof ctx.beginPath);
+                       // 尝试直接调用beginPath测试
+                       try {
+                         ctx.beginPath();
+                         console.log('beginPath调用成功');
+                         wxbarcode.upce(ctx, barcodeData.toString(), 400, 120);
+                         ctx.draw();
+                       } catch (e) {
+                         console.error('调用beginPath失败:', e);
+                         // 手动创建兼容层
+                         const compatibleCtx = new Proxy(ctx, { 
+                           get(target, prop) {
+                             if (prop === 'beginPath') {
+                               return () => target.rect(0,0,0,0); // 使用rect替代空beginPath
+                             }
+                             return target[prop];
+                           }
+                         });
+                         wxbarcode.upce(compatibleCtx, barcodeData.toString(), 400, 120);
+                         ctx.draw();
+                       }
+                     });
+                  } else {
+                    console.error('无法创建传统canvas上下文');
+                  }
+              });
+            }
           });
           // 可选择性更新本地缓存
           const fishList = wx.getStorageSync('fishList') || [];
@@ -46,6 +88,15 @@ Page({
     if (fishInfo) {
       this.setData({
         fishInfo: fishInfo
+      }, () => {
+        // 使用setData回调确保数据已更新
+        if (this.data.fishInfo) {
+          wx.nextTick(() => {
+            const barcodeData = this.data.fishInfo.barcode || this.data.fishInfo.id;
+              const ctx = wx.createCanvasContext('barcode');
+              wxbarcode.upce(ctx, barcodeData.toString(), 300, 90);
+          });
+        }
       });
     } else {
       wx.showToast({

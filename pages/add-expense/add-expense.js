@@ -5,11 +5,20 @@ Page({
    * 页面的初始数据
    */
   data: {
-    dateValue: ''
+    dateValue: '',
+    expenseItems: ['瓶子', '饲料'],
+    selectedItemIndex: 0
+  },
+
+  bindItemChange: function(e) {
+    this.setData({
+      selectedItemIndex: e.detail.value
+    });
   },
 
   formSubmit: function (e) {
-    const { item, amount, quantity, date } = e.detail.value;
+    const { item: selectedIndex, amount, quantity, date } = e.detail.value;
+    const item = this.data.expenseItems[selectedIndex];
     const qty = quantity ? parseInt(quantity) : 1;
     if (!item || !amount || !date) {
       wx.showToast({

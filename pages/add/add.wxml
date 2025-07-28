@@ -7,9 +7,7 @@
     <button class="add-button" bindtap="navigateToAddExpense">
       <text>添加固定支出</text>
     </button>
-    <button class="add-button" bindtap="navigateToBatchAddFish">
-      <text>批量添加鱼信息</text>
-    </button>
+
   </view>
   <tabbar tabbar="{{tabbar}}"></tabbar>
 </view>

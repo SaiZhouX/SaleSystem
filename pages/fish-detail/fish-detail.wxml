@@ -1,13 +1,20 @@
 <!--pages/fish-detail/fish-detail.wxml-->
 <view class="container" wx:if="{{fishInfo}}">
   <view class="detail-card">
-    <view class="detail-item"><text class="label">唯一ID:</text> <text class="value">{{fishInfo.uniqueId}}</text></view>
-    <view class="detail-item"><text class="label">批次号:</text> <text class="value">{{fishInfo.batch}}</text></view>
-    <view class="detail-item"><text class="label">进货日期:</text> <text class="value">{{fishInfo.purchaseDate}}</text></view>
+    <view class="detail-item"><text class="label">唯一ID:</text> <text class="value">{{fishInfo.id}}</text></view>
+    <view class="detail-item"><text class="label">时间戳:</text> <text class="value">{{fishInfo.timestamp}}</text></view>
+      <view class="detail-item"><text class="label">状态:</text> <text class="value">{{fishInfo.status}}</text></view>
+    <view class="detail-item"><text class="label">批次号:</text> <text class="value">{{fishInfo.batch || '未设置'}}</text></view>
+    <view class="detail-item"><text class="label">进货日期:</text> <text class="value">{{fishInfo.purchase_date}}</text></view>
     <view class="detail-item"><text class="label">进货价格:</text> <text class="value">¥{{fishInfo.purchasePrice}}</text></view>
     <view class="detail-item"><text class="label">销售状态:</text> <text class="value">{{fishInfo.isSold ? '已售出' : '未售出'}}</text></view>
+      
+      
+
+      <view class="detail-item"><text class="label">条形码:</text> <text class="value">{{fishInfo.barcode}}</text></view>
     <view wx:if="{{fishInfo.isSold}}" class="detail-item"><text class="label">销售日期:</text> <text class="value">{{fishInfo.soldDate}}</text></view>
     <view wx:if="{{fishInfo.isSold}}" class="detail-item"><text class="label">销售价格:</text> <text class="value">¥{{fishInfo.soldPrice}}</text></view>
+
   </view>
 
   <view class="photo-section">
@@ -42,13 +49,5 @@
     </view>
   </view>
 
-  <button class="scan-btn" bindtap="scanCode">模拟扫码</button>
 
-  <!-- 条形码 -->
-  <view class="barcode-container">
-    <image wx:if="{{fishInfo.barcode}}" src="{{fishInfo.barcode}}" class="barcode-img" mode="widthFix"></image>
-    <button wx:else bindtap="generateBarcode" class="generate-btn">生成条形码</button>
-  </view>
-
-  <canvas canvas-id="barcode" style="width: 300px; height: 150px; position: absolute; left: -1000px; top: -1000px;"></canvas>
 </view>
