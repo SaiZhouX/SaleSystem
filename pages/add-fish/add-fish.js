@@ -73,6 +73,21 @@ Page({
     fishList.push(newFish);
     wx.setStorageSync('fishList', fishList);
 
+    // 同步鱼进货支出到总支出
+    const expenseList = wx.getStorageSync('expenseList') || [];
+    expenseList.push({
+      item: '鱼进货',
+      amount: newFish.purchasePrice,
+      quantity: 1,
+      total: newFish.purchasePrice,
+      date: newFish.purchase_date
+    });
+    wx.setStorageSync('expenseList', expenseList);
+
+    // 更新总支出
+    const totalExpense = wx.getStorageSync('totalExpense') || 0;
+    wx.setStorageSync('totalExpense', totalExpense + newFish.purchasePrice);
+
     // 同步到服务器
     console.log('提交到服务器的数据:', newFish);
     wx.request({
