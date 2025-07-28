@@ -1,5 +1,6 @@
 // pages/add-fish/add-fish.js
 const api = require('../../utils/api.js');
+const wxbarcode = require('../../utils/wxbarcode.js');
 
 Page({
   data: {
@@ -11,11 +12,20 @@ Page({
 
   onLoad() {
     // 生成唯一ID
+    const fishId = Math.random().toString(36).substr(2, 10) + Date.now().toString(36);
     this.setData({
-      fishId: Math.random().toString(36).substr(2, 10) + Date.now().toString(36),
+      fishId: fishId,
+      barcode: fishId,
       // 设置默认日期为今天
       purchaseDate: new Date().toISOString().split('T')[0]
     });
+
+    // 生成条形码
+    wxbarcode.barcode('barcode', fishId, 400, 120);
+  },
+
+  navigateToBatchAddFish() {
+    wx.navigateTo({ url: '/pages/batch-add-fish/batch-add-fish' });
   },
 
   bindDateChange(e) {

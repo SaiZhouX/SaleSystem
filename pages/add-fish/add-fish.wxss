@@ -1,4 +1,5 @@
 /* pages/add-fish/add-fish.wxss */
+
 .header {
   position: absolute;
   top: 20rpx;
@@ -98,19 +99,21 @@ input {
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  padding: 20rpx 0;
+  padding: 0rpx 0;
+  margin: 0;
 }
 
 #barcode {
-  width: 400rpx;
-  height: 150rpx;
-  margin-right: 20rpx;
+  width: 360rpx;
+  height: 40rpx;
+  margin-right: 15rpx;
 }
 
 .barcode-text {
-  margin-top: 10rpx;
-  font-size: 26rpx;
+  margin-top: 0rpx;
+  font-size: 20rpx;
   color: #666;
+  white-space: nowrap;
 }
 
 form .submit-btn {
