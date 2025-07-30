@@ -17,7 +17,7 @@
     </view>
     <view class="form-item">
       <text class="item-label">日期</text>
-      <picker name="date" mode="date" start="2020-01-01" end="2030-12-31">
+      <picker name="date" mode="date" start="2020-01-01" end="2030-12-31" value="{{dateValue}}" bindchange="bindDateChange">
         <view class="picker">
           {{dateValue || '请选择日期'}}
         </view>

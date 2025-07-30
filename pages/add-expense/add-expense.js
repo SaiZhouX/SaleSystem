@@ -5,9 +5,17 @@ Page({
    * 页面的初始数据
    */
   data: {
-    dateValue: '',
+    dateValue: new Date().toISOString().split('T')[0],
     expenseItems: ['瓶子', '饲料'],
     selectedItemIndex: 0
+  },
+
+  onLoad() {
+    // 设置默认日期为今天
+    const today = new Date().toISOString().split('T')[0];
+    this.setData({
+      dateValue: today
+    });
   },
 
   bindItemChange: function(e) {
@@ -16,9 +24,16 @@ Page({
     });
   },
 
+  bindDateChange: function(e) {
+    this.setData({
+      dateValue: e.detail.value
+    });
+  },
+
   formSubmit: function (e) {
-    const { item: selectedIndex, amount, quantity, date } = e.detail.value;
+    const { item: selectedIndex, amount, quantity } = e.detail.value;
     const item = this.data.expenseItems[selectedIndex];
+    const date = this.data.dateValue;
     const qty = quantity ? parseInt(quantity) : 1;
     if (!item || !amount || !date) {
       wx.showToast({
