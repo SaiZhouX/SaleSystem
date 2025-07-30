@@ -1,8 +1,10 @@
 <!--pages/add-fish/add-fish.wxml-->
+<!--pages/add-fish/add-fish.wxml-->
 <view class="container">
   <view class="header">
     <button class="batch-add-btn" bindtap="navigateToBatchAddFish" style="width: 160rpx !important; box-sizing: border-box !important; padding: 0 !important;">批量添加</button>
   </view>
+  
   <form bindsubmit="formSubmit">
     <view class="form-item">
       <text class="item-label">进货日期</text>
@@ -14,26 +16,27 @@
       <text class="item-label">单价</text>
       <input class="price-input" name="purchasePrice" type="digit" placeholder="请输入单价" />
     </view>
-    <view class="photo-section">
-      <view class="section-title">鱼类照片</view>
-      <view class="photo-container">
-        <image wx:if="{{photoPath}}" src="{{photoPath}}" class="fish-photo" mode="aspectFit" bindtap="previewPhoto"></image>
-        <view wx:else class="photo-placeholder">
-          <text class="placeholder-text">暂无照片</text>
-          <button class="photo-btn-center" bindtap="takePhoto">拍照</button>
-        </view>
-      </view>
-    </view>
-
-    <view class="barcode-section">
-      <view class="section-title">条形码</view>
-      <canvas canvas-id="barcode" class="barcode-canvas" wx:if="{{!barcodeError}}"></canvas>
-      <view class="barcode-text-display" wx:if="{{barcodeError}}">{{barcode}}</view>
-    </view>
     <view class="form-item">
       <text class="item-label">备注信息</text>
       <input class="notes-input" name="notes" placeholder="请输入备注信息" />
     </view>
     <button form-type="submit" class="submit-btn" style="width: 320rpx !important; box-sizing: border-box !important; padding: 0 !important;">确认添加</button>
   </form>
+
+  <view class="photo-section">
+    <view class="section-title">鱼类照片</view>
+    <view class="photo-container">
+      <image wx:if="{{photoPath}}" src="{{photoPath}}" class="fish-photo" mode="aspectFit" bindtap="previewPhoto"></image>
+      <view wx:else class="photo-placeholder">
+        <text class="placeholder-text">暂无照片</text>
+        <button class="photo-btn-center" bindtap="takePhoto">拍照</button>
+      </view>
+    </view>
+  </view>
+
+  <view class="barcode-section">
+    <view class="section-title">条形码</view>
+    <canvas canvas-id="barcode" class="barcode-canvas" wx:if="{{!barcodeError}}"></canvas>
+    <view class="barcode-text-display" wx:if="{{barcodeError}}">{{barcode}}</view>
+  </view>
 </view>
