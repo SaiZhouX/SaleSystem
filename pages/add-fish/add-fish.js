@@ -1,10 +1,15 @@
 // pages/add-fish/add-fish.js
-const api = require('../../utils/api.js');
-const wxbarcode = require('../../utils/wxbarcode.js');
+const DataManager = require('../../utils/managers/DataManager.js');
+const PhotoManager = require('../../utils/managers/PhotoManager.js');
+const BarcodeManager = require('../../utils/managers/BarcodeManager.js');
+const FormValidator = require('../../utils/validators/FormValidator.js');
+const DateHelper = require('../../utils/helpers/DateHelper.js');
+const { APP_CONFIG } = require('../../utils/constants/AppConstants.js');
 
 Page({
   data: {
     fishId: '',
+    batchNumber: '',
     purchaseDate: '',
     purchasePrice: '',
     photoPath: '',
@@ -14,29 +19,22 @@ Page({
   },
 
   onLoad() {
-    // 生成唯一ID
-    const fishId = Math.random().toString(36).substr(2, 10) + Date.now().toString(36);
-    const batchNumber = 'B' + Date.now().toString(36).substr(2, 6);
-      // 生成barcode并记录日志
-      const generatedBarcode = fishId.substring(0, 12).toUpperCase();
-      console.log('生成的barcode数据:', generatedBarcode);
-      this.setData({
+    // 使用工具类生成ID和批次号
+    const fishId = DataManager.generateFishId();
+    const batchNumber = DataManager.generateBatchNumber();
+    const barcode = BarcodeManager.generateBarcodeData(fishId);
+    
+    this.setData({
       fishId: fishId,
-        batchNumber: batchNumber,
-        barcode: fishId.substring(0, 12).toUpperCase(),
-      // 设置默认日期为今天
-      purchaseDate: new Date().toISOString().split('T')[0]
+      batchNumber: batchNumber,
+      barcode: barcode,
+      purchaseDate: DateHelper.getCurrentDate()
     });
 
-    // 生成条形码
-    wx.nextTick(() => {
-      try {
-        wxbarcode.barcode('barcode', generatedBarcode, 300, 80);
-      } catch (e) {
-        console.error('条形码生成失败:', e);
-        this.setData({
-          barcodeError: true
-        });
+    // 使用工具类生成条形码
+    BarcodeManager.initBarcodeDisplay('barcode', fishId, (result) => {
+      if (!result.success) {
+        this.setData({ barcodeError: true });
       }
     });
   },
@@ -51,94 +49,82 @@ Page({
     });
   },
 
-  takePhoto: function() {
-    wx.chooseImage({
-      count: 1,
-      sizeType: ['compressed'],
-      sourceType: ['camera', 'album'],
-      success: (res) => {
-        const tempFilePath = res.tempFilePaths[0];
+  // 使用工具类处理拍照
+  async takePhoto() {
+    try {
+      const result = await PhotoManager.handleTakePhoto(this.data.fishId);
+      if (result.success) {
         this.setData({
-          photoPath: tempFilePath
-        });
-        wx.showToast({ title: '照片已选择', icon: 'success' });
-      },
-      fail: (err) => {
-        console.error('选择照片失败:', err);
-        wx.showToast({
-          title: '选择照片失败',
-          icon: 'none'
+          photoPath: result.fish.photoPath
         });
       }
-    });
-  },
-
-  previewPhoto: function() {
-    if (this.data.photoPath) {
-      wx.previewImage({
-        urls: [this.data.photoPath],
-        current: this.data.photoPath
-      });
+    } catch (error) {
+      console.error('拍照处理失败:', error);
     }
   },
 
+  // 使用工具类预览照片
+  previewPhoto() {
+    PhotoManager.previewPhoto(this.data.photoPath);
+  },
+
+  // 使用工具类处理表单提交
   formSubmit(e) {
-    const { purchasePrice, purchaseDate } = e.detail.value;
-    const price = parseFloat(purchasePrice);
+    const { purchasePrice, purchaseDate, notes } = e.detail.value;
 
-    // 表单验证
-    if (!purchaseDate) {
-      wx.showToast({ title: '请选择进货日期', icon: 'none' });
-      return;
-    }
+    // 使用表单验证工具类
+    const validationResult = FormValidator.validateAddFishForm({
+      purchaseDate: purchaseDate,
+      purchasePrice: purchasePrice,
+      notes: notes
+    });
 
-    if (isNaN(price) || price <= 0) {
-      wx.showToast({ title: '请输入有效的进货价格', icon: 'none' });
+    if (!FormValidator.handleFormValidation(validationResult)) {
       return;
     }
 
     if (this.data.submitting) return;
     this.setData({ submitting: true });
 
-    // 创建新鱼信息对象
-    // 创建新鱼信息对象
-    const newFish = {
-      id: this.data.fishId,
-      batch: this.data.batchNumber,
-      purchase_date: purchaseDate,
-      purchasePrice: price,
-      barcode: this.data.barcode,
-      photoPath: this.data.photoPath || '',
-      status: 'instock',
-      timestamp: Date.now()
-    };
+    try {
+      // 创建新鱼信息对象
+      const newFish = {
+        id: this.data.fishId,
+        batch: this.data.batchNumber,
+        purchase_date: validationResult.data.purchaseDate,
+        purchasePrice: validationResult.data.purchasePrice,
+        barcode: this.data.barcode,
+        photoPath: this.data.photoPath || '',
+        status: APP_CONFIG.FISH_STATUS.INSTOCK,
+        notes: validationResult.data.notes,
+        timestamp: Date.now()
+      };
 
-    // 保存到本地存储
-    const fishList = wx.getStorageSync('fishList') || [];
-    fishList.push(newFish);
-    wx.setStorageSync('fishList', fishList);
+      // 使用数据管理工具类保存数据
+      DataManager.addFish(newFish);
 
-    // 同步鱼进货支出到总支出
-    const expenseList = wx.getStorageSync('expenseList') || [];
-    expenseList.push({
-      item: '鱼进货',
-      amount: newFish.purchasePrice,
-      quantity: 1,
-      total: newFish.purchasePrice,
-      date: newFish.purchase_date
-    });
-    wx.setStorageSync('expenseList', expenseList);
+      // 同步到服务器
+      this.syncToServer(newFish);
 
-    // 更新总支出
-    const totalExpense = wx.getStorageSync('totalExpense') || 0;
-    wx.setStorageSync('totalExpense', totalExpense + newFish.purchasePrice);
+    } catch (error) {
+      console.error('添加鱼信息失败:', error);
+      wx.showToast({ 
+        title: '添加失败', 
+        icon: 'none' 
+      });
+      this.setData({ submitting: false });
+    }
+  },
 
-    // 同步到服务器
-    console.log('提交到服务器的数据:', newFish);
+  // 同步数据到服务器
+  syncToServer(fishData) {
+    const api = require('../../utils/api.js');
+    
+    console.log('提交到服务器的数据:', fishData);
     wx.request({
       url: api.addFish,
       method: 'POST',
-      data: newFish,
+      data: fishData,
       success: (res) => {
         if (res.statusCode === 200) {
           wx.showToast({ title: '添加成功', icon: 'success' });

@@ -1,121 +1,106 @@
 // pages/batch-add-fish/batch-add-fish.js
-const api = require('../../utils/api.js');
-const wxbarcode = require('../../utils/wxbarcode.js');
+const DataManager = require('../../utils/managers/DataManager.js');
+const BarcodeManager = require('../../utils/managers/BarcodeManager.js');
+const FormValidator = require('../../utils/validators/FormValidator.js');
+const DateHelper = require('../../utils/helpers/DateHelper.js');
+const { APP_CONFIG } = require('../../utils/constants/AppConstants.js');
 
 Page({
-  /**
-   * 页面的初始数据
-   */
   data: {
-    dateValue: new Date().toISOString().split('T')[0],
+    dateValue: '',
     submitting: false
   },
 
   onLoad() {
-    // 设置默认日期为今天
-    const today = new Date().toISOString().split('T')[0];
+    // 使用日期工具类设置默认日期
     this.setData({
-      dateValue: today
+      dateValue: DateHelper.getCurrentDate()
     });
   },
 
-  /**
-   * 日期选择器变化处理函数
-   */
-  bindDateChange: function(e) {
+  bindDateChange(e) {
     this.setData({
       dateValue: e.detail.value
     });
   },
 
-  /**
-   * 表单提交处理函数
-   */
-  formSubmit: function (e) {
+  // 使用工具类处理表单提交
+  formSubmit(e) {
     const { averagePrice, quantity } = e.detail.value;
-    const date = this.data.dateValue;
+    const purchaseDate = this.data.dateValue;
 
-    // 表单验证
-    if (!averagePrice || !quantity || !date) {
-      wx.showToast({
-        title: '请填写完整信息',
-        icon: 'none'
-      });
-      return;
-    }
+    // 使用表单验证工具类
+    const validationResult = FormValidator.validateBatchAddFishForm({
+      purchaseDate: purchaseDate,
+      averagePrice: averagePrice,
+      quantity: quantity
+    });
 
-    const qty = parseInt(quantity);
-    const price = parseFloat(averagePrice);
-
-    if (isNaN(price) || price <= 0) {
-      wx.showToast({ title: '请输入有效的进货价格', icon: 'none' });
-      return;
-    }
-
-    if (isNaN(qty) || qty <= 0) {
-      wx.showToast({ title: '请输入有效的鱼数量', icon: 'none' });
+    if (!FormValidator.handleFormValidation(validationResult)) {
       return;
     }
 
     if (this.data.submitting) return;
     this.setData({ submitting: true });
 
-    const fishList = wx.getStorageSync('fishList') || [];
+    try {
+      // 使用工具类批量生成鱼信息
+      const fishDataList = this.generateBatchFishData(
+        validationResult.data.quantity,
+        validationResult.data.averagePrice,
+        validationResult.data.purchaseDate
+      );
+
+      // 使用数据管理工具类保存数据
+      DataManager.addFishBatch(fishDataList);
+
+      // 显示成功提示并返回首页
+      wx.showToast({
+        title: `成功添加${validationResult.data.quantity}条鱼信息`,
+        icon: 'success',
+        duration: 2000,
+        success: () => {
+          setTimeout(() => {
+            wx.switchTab({ url: '/pages/index/index' });
+          }, 2000);
+        }
+      });
+
+    } catch (error) {
+      console.error('批量添加鱼信息失败:', error);
+      wx.showToast({ 
+        title: '添加失败', 
+        icon: 'none' 
+      });
+    } finally {
+      this.setData({ submitting: false });
+    }
+  },
+
+  // 批量生成鱼信息数据
+  generateBatchFishData(quantity, price, date) {
+    const fishDataList = [];
     const baseTimestamp = Date.now();
-    const batchNumber = 'B' + baseTimestamp.toString(36).substr(2, 6);
+    const batchNumber = DataManager.generateBatchNumber();
 
-    // 批量生成鱼信息
-    for (let i = 0; i < qty; i++) {
-      // 生成唯一ID，与单个添加保持一致的格式，但每个鱼有微小时间差异
+    for (let i = 0; i < quantity; i++) {
+      // 生成唯一ID，每个鱼有微小时间差异
       const fishId = Math.random().toString(36).substr(2, 10) + (baseTimestamp + i).toString(36);
-      // 生成条形码，与单个添加保持一致
-      const barcode = fishId.substring(0, 12).toUpperCase();
+      const barcode = BarcodeManager.generateBarcodeData(fishId);
 
-      // 创建新鱼信息对象，与单个添加保持一致的数据结构
       const newFish = {
         id: fishId,
         batch: batchNumber,
         purchase_date: date,
         purchasePrice: price,
         barcode: barcode,
-        status: 'instock',
+        status: APP_CONFIG.FISH_STATUS.INSTOCK,
         timestamp: Date.now()
       };
 
-      fishList.push(newFish);
+      fishDataList.push(newFish);
     }
 
-    // 保存到本地存储
-    wx.setStorageSync('fishList', fishList);
-
-    // 同步鱼进货支出到总支出
-    const expenseList = wx.getStorageSync('expenseList') || [];
-    expenseList.push({
-      item: '鱼进货(批量)',
-      amount: price,
-      quantity: qty,
-      total: price * qty,
-      date: date
-    });
-    wx.setStorageSync('expenseList', expenseList);
-
-    // 更新总支出
-    const totalExpense = wx.getStorageSync('totalExpense') || 0;
-    wx.setStorageSync('totalExpense', totalExpense + (price * qty));
-
-    // 显示成功提示并返回
-    // 显示成功提示并返回首页
-    wx.showToast({
-      title: `成功添加${qty}条鱼信息`,
-      icon: 'success',
-      duration: 2000,
-      success: () => {
-        setTimeout(() => {
-          wx.switchTab({ url: '/pages/index/index' });
-        }, 2000);
-      }
-    });
-
-    this.setData({ submitting: false });
+    return fishDataList;
   }
 })
