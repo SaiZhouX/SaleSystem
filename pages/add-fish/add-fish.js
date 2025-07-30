@@ -7,6 +7,9 @@ Page({
     fishId: '',
     purchaseDate: '',
     purchasePrice: '',
+    photoPath: '',
+    barcode: '',
+    barcodeError: false,
     submitting: false
   },
 
@@ -26,7 +29,16 @@ Page({
     });
 
     // 生成条形码
-    wxbarcode.barcode('barcode', fishId, 400, 120);
+    wx.nextTick(() => {
+      try {
+        wxbarcode.barcode('barcode', generatedBarcode, 300, 80);
+      } catch (e) {
+        console.error('条形码生成失败:', e);
+        this.setData({
+          barcodeError: true
+        });
+      }
+    });
   },
 
   navigateToBatchAddFish() {
@@ -34,9 +46,41 @@ Page({
   },
 
   bindDateChange(e) {
+  bindDateChange(e) {
     this.setData({
       purchaseDate: e.detail.value
     });
+  },
+
+  takePhoto: function() {
+    wx.chooseImage({
+      count: 1,
+      sizeType: ['compressed'],
+      sourceType: ['camera', 'album'],
+      success: (res) => {
+        const tempFilePath = res.tempFilePaths[0];
+        this.setData({
+          photoPath: tempFilePath
+        });
+        wx.showToast({ title: '照片已选择', icon: 'success' });
+      },
+      fail: (err) => {
+        console.error('选择照片失败:', err);
+        wx.showToast({
+          title: '选择照片失败',
+          icon: 'none'
+        });
+      }
+    });
+  },
+
+  previewPhoto: function() {
+    if (this.data.photoPath) {
+      wx.previewImage({
+        urls: [this.data.photoPath],
+        current: this.data.photoPath
+      });
+    }
   },
 
   formSubmit(e) {
@@ -58,12 +102,14 @@ Page({
     this.setData({ submitting: true });
 
     // 创建新鱼信息对象
+    // 创建新鱼信息对象
     const newFish = {
       id: this.data.fishId,
       batch: this.data.batchNumber,
       purchase_date: purchaseDate,
       purchasePrice: price,
       barcode: this.data.barcode,
+      photoPath: this.data.photoPath || '',
       status: 'instock',
       timestamp: Date.now()
     };

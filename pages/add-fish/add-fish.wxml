@@ -14,19 +14,21 @@
       <text class="item-label">单价</text>
       <input class="price-input" name="purchasePrice" type="digit" placeholder="请输入单价" />
     </view>
-    <view class="form-item">
-      <text class="item-label">照片</text>
-      <view class="upload-container">
-        <image src="{{photoPath || '/images/placeholder.svg'}}" class="preview-image" />
-        <button bindtap="takePhoto" class="upload-btn">拍照上传</button>
+    <view class="photo-section">
+      <view class="section-title">鱼类照片</view>
+      <view class="photo-container">
+        <image wx:if="{{photoPath}}" src="{{photoPath}}" class="fish-photo" mode="aspectFit" bindtap="previewPhoto"></image>
+        <view wx:else class="photo-placeholder">
+          <text class="placeholder-text">暂无照片</text>
+          <button class="photo-btn-center" bindtap="takePhoto">拍照</button>
+        </view>
       </view>
     </view>
-    <view class="form-item">
-      <text class="item-label">条形码</text>
-      <view class="barcode-container">
-        <view id="barcode"></view>
-        <text class="barcode-text">{{barcode}}</text>
-      </view>
+
+    <view class="barcode-section">
+      <view class="section-title">条形码</view>
+      <canvas canvas-id="barcode" class="barcode-canvas" wx:if="{{!barcodeError}}"></canvas>
+      <view class="barcode-text-display" wx:if="{{barcodeError}}">{{barcode}}</view>
     </view>
     <view class="form-item">
       <text class="item-label">备注信息</text>
