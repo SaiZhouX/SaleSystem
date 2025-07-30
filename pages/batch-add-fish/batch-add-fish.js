@@ -61,12 +61,13 @@ Page({
     this.setData({ submitting: true });
 
     const fishList = wx.getStorageSync('fishList') || [];
-    const batchNumber = 'B' + Date.now().toString(36).substr(2, 6);
+    const baseTimestamp = Date.now();
+    const batchNumber = 'B' + baseTimestamp.toString(36).substr(2, 6);
 
     // 批量生成鱼信息
     for (let i = 0; i < qty; i++) {
-      // 生成唯一ID，与单个添加保持一致的格式
-      const fishId = Math.random().toString(36).substr(2, 10) + Date.now().toString(36);
+      // 生成唯一ID，与单个添加保持一致的格式，但每个鱼有微小时间差异
+      const fishId = Math.random().toString(36).substr(2, 10) + (baseTimestamp + i).toString(36);
       // 生成条形码，与单个添加保持一致
       const barcode = fishId.substring(0, 12).toUpperCase();
 
