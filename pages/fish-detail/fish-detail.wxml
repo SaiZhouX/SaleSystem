@@ -17,7 +17,7 @@
     <view class="detail-item"><text class="label">进货价格:</text> <text class="value">¥{{fishInfo.purchasePrice}}</text></view>
     <view class="detail-item">
       <text class="label">状态:</text> 
-      <text class="value status-{{fishInfo.status || 'instock'}}">{{fishInfo.status === 'sold' ? '已售出' : (fishInfo.status === 'dead' ? '死亡' : '未出售')}}</text>
+      <text class="value status-{{fishInfo.status || 'instock'}}">{{fishInfo.status === 'sold' ? '已出售' : (fishInfo.status === 'dead' ? '死亡' : '未出售')}}</text>
     </view>
     
     <!-- 已售出状态显示销售信息 -->
@@ -50,7 +50,7 @@
   <!-- 操作按钮区域 - 只有未出售状态才显示 -->
   <view class="action-section" wx:if="{{fishInfo.status === 'instock' || !fishInfo.status}}">
     <view class="button-row">
-      <button class="sell-btn" bindtap="sellFish">标记为已售出</button>
+      <button class="sell-btn" bindtap="sellFish">标记为已出售</button>
       <button class="dead-btn" bindtap="markAsDead">标记为死亡</button>
     </view>
   </view>

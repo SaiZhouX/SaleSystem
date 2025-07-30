@@ -20,19 +20,37 @@
   </view>
 
   <view class="fish-list-container">
-    <text class="list-title">库存概览</text>
-    <scroll-view scroll-y class="fish-list">
-      <view wx:for="{{fishList}}" wx:key="id" class="fish-item" bindtap="goToFishDetail" data-id="{{item.id}}">
-        <view class="fish-info">
-          <text class="fish-id">ID: {{item.id}}</text>
-          <text class="purchase-date">进货日期: {{item.purchase_date || '未知日期'}}</text>
+    <view class="list-header">
+      <text class="list-title">库存概览</text>
+      <view class="status-tabs">
+        <view class="tab-item {{currentTab === 'instock' ? 'active' : ''}}" bindtap="switchTab" data-tab="instock">
+          <text>未出售</text>
         </view>
-        <view class="fish-status status-{{item.status || 'instock'}}">
-          {{item.status === 'sold' ? '已售出' : (item.status === 'dead' ? '死亡' : '未出售')}}
+        <view class="tab-item {{currentTab === 'sold' ? 'active' : ''}}" bindtap="switchTab" data-tab="sold">
+          <text>已出售</text>
+        </view>
+        <view class="tab-item {{currentTab === 'dead' ? 'active' : ''}}" bindtap="switchTab" data-tab="dead">
+          <text>死亡</text>
         </view>
       </view>
-      <view wx:if="{{fishList.length == 0}}" class="empty-list">
-        <text>暂无库存</text>
+    </view>
+    
+    <scroll-view scroll-y class="fish-list">
+      <view wx:for="{{filteredFishList}}" wx:key="id" class="fish-item" bindtap="goToFishDetail" data-id="{{item.id}}">
+        <view class="fish-info">
+          <text class="fish-id">ID: {{item.id}}</text>
+          <text class="fish-date">
+            {{currentTab === 'sold' ? '销售日期: ' + (item.soldDate || '未知日期') : 
+              (currentTab === 'dead' ? '死亡日期: ' + (item.deadDate || '未知日期') : 
+               '进货日期: ' + (item.purchase_date || '未知日期'))}}
+          </text>
+        </view>
+        <view class="fish-status status-{{item.status || 'instock'}}">
+          {{item.status === 'sold' ? '已出售' : (item.status === 'dead' ? '死亡' : '未出售')}}
+        </view>
+      </view>
+      <view wx:if="{{filteredFishList.length == 0}}" class="empty-list">
+        <text>{{currentTab === 'instock' ? '暂无未出售的鱼' : (currentTab === 'sold' ? '暂无已出售的鱼' : '暂无死亡的鱼')}}</text>
       </view>
     </scroll-view>
   </view>
