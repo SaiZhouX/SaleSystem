@@ -1,53 +1,58 @@
 <!--pages/fish-detail/fish-detail.wxml-->
 <view class="container" wx:if="{{fishInfo}}">
-  <view class="detail-card">
-    <view class="detail-item"><text class="label">唯一ID:</text> <text class="value">{{fishInfo.id}}</text></view>
-    <view class="detail-item"><text class="label">时间戳:</text> <text class="value">{{fishInfo.timestamp}}</text></view>
-      <view class="detail-item"><text class="label">状态:</text> <text class="value">{{fishInfo.status}}</text></view>
-    <view class="detail-item"><text class="label">批次号:</text> <text class="value">{{fishInfo.batch || '未设置'}}</text></view>
-    <view class="detail-item"><text class="label">进货日期:</text> <text class="value">{{fishInfo.purchase_date}}</text></view>
-    <view class="detail-item"><text class="label">进货价格:</text> <text class="value">¥{{fishInfo.purchasePrice}}</text></view>
-    <view class="detail-item"><text class="label">销售状态:</text> <text class="value">{{fishInfo.isSold ? '已售出' : '未售出'}}</text></view>
-      
-      
-
-      <view class="detail-item"><text class="label">条形码:</text> <text class="value">{{fishInfo.barcode}}</text></view>
-    <view wx:if="{{fishInfo.isSold}}" class="detail-item"><text class="label">销售日期:</text> <text class="value">{{fishInfo.soldDate}}</text></view>
-    <view wx:if="{{fishInfo.isSold}}" class="detail-item"><text class="label">销售价格:</text> <text class="value">¥{{fishInfo.soldPrice}}</text></view>
-
-  </view>
-
   <view class="photo-section">
-    <image wx:if="{{fishInfo.photoPath}}" src="{{fishInfo.photoPath}}" class="fish-photo" mode="aspectFit"></image>
-    <button wx:else class="photo-btn" bindtap="takePhoto">拍照</button>
-  </view>
-
-  <!-- <view class="barcode-section">
-    <canvas canvas-id="barcode" style="width: 300px; height: 150px;"></canvas>
-  </view> -->
-
-  <view class="status-update-section">
-    <picker bindchange="bindStatusChange" value="{{newStatus}}" range="{{statusOptions}}">
-      <view class="picker">
-        当前状态: {{newStatus}}
-      </view>
-    </picker>
-    <input class="notes-input" placeholder="请输入备注信息" value="{{newNotes}}" bindinput="notesInput"/>
-    <button class="update-btn" bindtap="addStatusLog">更新状态</button>
-  </view>
-
-  <view class="history-section">
-    <view class="section-title">状态历史记录</view>
-    <view class="log-list">
-      <view class="log-item" wx:for="{{fishInfo.statusLog}}" wx:key="date">
-        <view class="log-info">
-          <text class="log-status status-{{item.status}}">{{item.status}}</text>
-          <text class="log-date">{{item.date}}</text>
-        </view>
-        <text class="log-notes">{{item.notes}}</text>
+    <view class="section-title">鱼类照片</view>
+    <view class="photo-container">
+      <image wx:if="{{fishInfo.photoPath}}" src="{{fishInfo.photoPath}}" class="fish-photo" mode="aspectFit" bindtap="previewPhoto"></image>
+      <view wx:else class="photo-placeholder">
+        <text class="placeholder-text">暂无照片</text>
+        <button class="photo-btn-center" bindtap="takePhoto">拍照</button>
       </view>
     </view>
   </view>
 
+  <view class="detail-card">
+    <view class="detail-item"><text class="label">批次号:</text> <text class="value">{{fishInfo.batch || '未设置'}}</text></view>
+    <view class="detail-item"><text class="label">进货日期:</text> <text class="value">{{fishInfo.purchase_date}}</text></view>
+    <view class="detail-item"><text class="label">进货价格:</text> <text class="value">¥{{fishInfo.purchasePrice}}</text></view>
+    <view class="detail-item">
+      <text class="label">状态:</text> 
+      <text class="value status-{{fishInfo.status || 'instock'}}">{{fishInfo.status === 'sold' ? '已售出' : (fishInfo.status === 'dead' ? '死亡' : '未出售')}}</text>
+    </view>
+    
+    <!-- 已售出状态显示销售信息 -->
+    <view wx:if="{{fishInfo.status === 'sold'}}" class="detail-item">
+      <text class="label">销售日期:</text> 
+      <text class="value">{{fishInfo.soldDate}}</text>
+    </view>
+    <view wx:if="{{fishInfo.status === 'sold'}}" class="detail-item">
+      <text class="label">销售价格:</text> 
+      <text class="value">¥{{fishInfo.soldPrice}}</text>
+    </view>
+    
+    <!-- 死亡状态显示死亡信息 -->
+    <view wx:if="{{fishInfo.status === 'dead'}}" class="detail-item">
+      <text class="label">死亡日期:</text> 
+      <text class="value">{{fishInfo.deadDate}}</text>
+    </view>
+    <view wx:if="{{fishInfo.status === 'dead'}}" class="detail-item">
+      <text class="label">损失金额:</text> 
+      <text class="value loss-amount">¥{{fishInfo.purchasePrice}}</text>
+    </view>
+  </view>
+
+  <view class="barcode-section" wx:if="{{fishInfo.barcode}}">
+    <view class="section-title">条形码</view>
+    <canvas canvas-id="barcode" class="barcode-canvas" wx:if="{{!barcodeError}}"></canvas>
+    <view class="barcode-text" wx:if="{{barcodeError}}">{{fishInfo.barcode}}</view>
+  </view>
+
+  <!-- 操作按钮区域 - 只有未出售状态才显示 -->
+  <view class="action-section" wx:if="{{fishInfo.status === 'instock' || !fishInfo.status}}">
+    <view class="button-row">
+      <button class="sell-btn" bindtap="sellFish">标记为已售出</button>
+      <button class="dead-btn" bindtap="markAsDead">标记为死亡</button>
+    </view>
+  </view>
 
 </view>

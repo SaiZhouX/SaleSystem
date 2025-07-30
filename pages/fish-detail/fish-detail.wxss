@@ -6,6 +6,64 @@
   width: 100%;
 }
 
+.photo-section {
+  background-color: #fff;
+  border-radius: 16rpx;
+  padding: 20rpx;
+  margin: 20rpx;
+  width: calc(100% - 40rpx);
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.photo-container {
+  width: 100%;
+  height: 400rpx;
+  margin-bottom: 20rpx;
+  border-radius: 12rpx;
+  overflow: hidden;
+  position: relative;
+}
+
+.fish-photo {
+  width: 100%;
+  height: 100%;
+  border-radius: 12rpx;
+  background-color: #f8f8f8;
+}
+
+.photo-placeholder {
+  width: 100%;
+  height: 100%;
+  background-color: #f8f8f8;
+  border: 2rpx dashed #ddd;
+  border-radius: 12rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.placeholder-text {
+  color: #999;
+  font-size: 28rpx;
+  margin-bottom: 20rpx;
+}
+
+.photo-btn-center {
+  background-color: #3498db;
+  color: #fff;
+  border-radius: 8rpx;
+  width: 160rpx;
+  height: 60rpx;
+  line-height: 60rpx;
+  font-size: 26rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .detail-card {
   background-color: #fff;
   border-radius: 16rpx;
@@ -35,146 +93,89 @@
   color: #333;
 }
 
-.photo-section {
+.barcode-section {
+  background-color: #fff;
+  border-radius: 16rpx;
+  padding: 20rpx;
   margin: 0 20rpx 20rpx;
+  width: calc(100% - 40rpx);
+  box-sizing: border-box;
   text-align: center;
-  width: calc(100% - 40rpx);
-  box-sizing: border-box;
-}
-
-.fish-photo {
-  width: 100%;
-  height: 400rpx;
-  border-radius: 16rpx;
-  background-color: #eee;
-}
-
-.photo-btn {
-  background-color: #3498db;
-  color: #fff;
-  margin: 20rpx;
-}
-
-.status-update-section {
-  background-color: #fff;
-  border-radius: 16rpx;
-  padding: 20rpx;
-  margin: 0 20rpx 20rpx;
-  width: calc(100% - 40rpx);
-  box-sizing: border-box;
-}
-
-.picker {
-  width: 100%;
-  padding: 20rpx;
-  border: 1rpx solid #eee;
-  border-radius: 8rpx;
-  margin-bottom: 20rpx;
-  box-sizing: border-box;
-}
-
-.notes-input {
-  width: 100%;
-  height: 150rpx;
-  min-height: 150rpx;
-  padding: 20rpx;
-  border: 1rpx solid #eee;
-  border-radius: 8rpx;
-  margin-bottom: 20rpx;
-  box-sizing: border-box;
-}
-
-.update-btn {
-  background-color: #1aad19;
-  color: #fff;
-  width: 100%;
-}
-
-.history-section {
-  background-color: #fff;
-  border-radius: 16rpx;
-  padding: 20rpx;
-  margin: 0 20rpx 20rpx;
-  width: calc(100% - 40rpx);
-  box-sizing: border-box;
 }
 
 .section-title {
   font-size: 32rpx;
   font-weight: bold;
   margin-bottom: 20rpx;
+  color: #333;
 }
 
-.log-list {
-  
-}
-
-.log-item {
-  padding: 20rpx 0;
-  border-bottom: 1rpx solid #f0f0f0;
-}
-
-.log-item:last-child {
-  border-bottom: none;
-}
-
-.log-info {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10rpx;
-}
-
-.log-status {
-  font-weight: bold;
-}
-
-.status-healthy { color: #1aad19; }
-.status-sick { color: #f39c12; }
-.status-dead { color: #e74c3c; }
-.status-sold { color: #3498db; }
-
-.log-date {
-  font-size: 24rpx;
-  color: #999;
-}
-
-.log-notes {
-  font-size: 28rpx;
-  color: #666;
-}
-
-.scan-btn {
-  margin-top: 40rpx;
-  background-color: #3498db;
-  color: #fff;
-  width: 100%;
-}
-
-.barcode-container {
-    margin: 40rpx 20rpx 0;
-    text-align: center;
-    display: flex;
-    justify-content: center;
-    padding: 20rpx 0;
-    width: calc(100% - 40rpx);
-    box-sizing: border-box;
-  }
-
-  .barcode-canvas {
+.barcode-canvas {
   width: 100%;
   height: 120rpx;
   border: 1rpx solid #f0f0f0;
+  border-radius: 8rpx;
 }
 
-.barcode-img {
-  width: 80%;
-  margin: 0 auto;
-}
-
-.generate-btn {
+.barcode-text {
   width: 100%;
-  margin-top: 20rpx;
-  background-color: #ffc300;
-  color: #000;
+  height: 120rpx;
+  border: 1rpx solid #f0f0f0;
+  border-radius: 8rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Courier New', monospace;
+  font-size: 24rpx;
+  color: #333;
+  background-color: #fafafa;
+  letter-spacing: 2rpx;
+}
+
+.action-section {
+  background-color: #fff;
+  border-radius: 16rpx;
+  padding: 20rpx;
+  margin: 0 20rpx 20rpx;
+  width: calc(100% - 40rpx);
+  box-sizing: border-box;
+}
+
+.button-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 20rpx;
+}
+
+.sell-btn {
+  background-color: #1aad19;
+  color: #fff;
+  flex: 1;
+  border-radius: 8rpx;
+}
+
+.dead-btn {
+  background-color: #e74c3c;
+  color: #fff;
+  flex: 1;
+  border-radius: 8rpx;
+}
+
+/* 状态颜色样式 */
+.status-instock {
+  color: #3498db;
+}
+
+.status-sold {
+  color: #1aad19;
+}
+
+.status-dead {
+  color: #e74c3c;
+}
+
+/* 损失金额样式 */
+.loss-amount {
+  color: #e74c3c;
+  font-weight: bold;
 }

@@ -5,80 +5,22 @@ const api = require('../../utils/api.js');
 
 Page({
   data: {
-    fishInfo: null,
-    newStatus: '健康',
-    newNotes: '',
-    statusOptions: ['健康', '生病', '死亡', '已售出']
+    fishInfo: null
+  },
+
+  // 获取状态显示文本
+  getStatusText: function(status) {
+    const statusMap = {
+      'instock': '未出售',
+      'sold': '已售出', 
+      'dead': '死亡'
+    };
+    return statusMap[status || 'instock'] || '未出售';
   },
 
   onLoad: function (options) {
     const fishId = options.id;
-    wx.request({
-      url: api.getFishDetail(fishId),
-      method: 'GET',
-      success: (res) => {
-        if (res.statusCode === 200 && res.data) {
-          console.log('API返回的原始数据:', res.data);
-          this.setData({
-            fishInfo: res.data
-          }, () => {
-            console.log('setData回调中的fishInfo:', this.data.fishInfo);
-            // 使用setData回调确保数据已更新
-            if (this.data.fishInfo) {
-              wx.nextTick(() => {
-                console.log('完整fishInfo数据:', this.data.fishInfo);
-                  const barcodeData = this.data.fishInfo.barcode || this.data.fishInfo.id;
-                  console.log('条形码数据源:', {barcode: this.data.fishInfo.barcode, id: this.data.fishInfo.id, barcodeData});
-                // 使用传统canvas API获取上下文
-                  const ctx = wx.createCanvasContext('barcode');
-                  console.log('传统API获取的上下文:', ctx);
-                  console.log('上下文方法:', ctx ? Object.keys(ctx) : 'null');
-                  if (ctx) {
-                    wx.nextTick(() => {
-                       console.log('beginPath方法存在性:', typeof ctx.beginPath);
-                       // 尝试直接调用beginPath测试
-                       try {
-                         ctx.beginPath();
-                         console.log('beginPath调用成功');
-                         wxbarcode.upce(ctx, barcodeData.toString(), 400, 120);
-                         ctx.draw();
-                       } catch (e) {
-                         console.error('调用beginPath失败:', e);
-                         // 手动创建兼容层
-                         const compatibleCtx = new Proxy(ctx, { 
-                           get(target, prop) {
-                             if (prop === 'beginPath') {
-                               return () => target.rect(0,0,0,0); // 使用rect替代空beginPath
-                             }
-                             return target[prop];
-                           }
-                         });
-                         wxbarcode.upce(compatibleCtx, barcodeData.toString(), 400, 120);
-                         ctx.draw();
-                       }
-                     });
-                  } else {
-                    console.error('无法创建传统canvas上下文');
-                  }
-              });
-            }
-          });
-          // 可选择性更新本地缓存
-          const fishList = wx.getStorageSync('fishList') || [];
-          const fishIndex = fishList.findIndex(f => f.id === fishId);
-          if (fishIndex !== -1) {
-            fishList[fishIndex] = res.data;
-            wx.setStorageSync('fishList', fishList);
-          }
-        } else {
-          this.loadLocalData(fishId);
-        }
-      },
-      fail: (err) => {
-        console.error('获取详情失败', err);
-        this.loadLocalData(fishId);
-      }
-    });
+    this.loadLocalData(fishId);
   },
 
   loadLocalData: function(id) {
@@ -89,12 +31,20 @@ Page({
       this.setData({
         fishInfo: fishInfo
       }, () => {
-        // 使用setData回调确保数据已更新
-        if (this.data.fishInfo) {
+        // 生成条形码
+        if (this.data.fishInfo && this.data.fishInfo.barcode) {
           wx.nextTick(() => {
-            const barcodeData = this.data.fishInfo.barcode || this.data.fishInfo.id;
-              const ctx = wx.createCanvasContext('barcode');
-              wxbarcode.upce(ctx, barcodeData.toString(), 300, 90);
+            try {
+              const barcodeData = this.data.fishInfo.barcode;
+              console.log('生成条形码，数据:', barcodeData);
+              wxbarcode.barcode('barcode', barcodeData, 300, 80);
+            } catch (e) {
+              console.error('条形码生成失败:', e);
+              // 如果条形码生成失败，显示条形码字符串作为备选
+              this.setData({
+                barcodeError: true
+              });
+            }
           });
         }
       });
@@ -103,50 +53,106 @@ Page({
         title: '未找到该鱼的信息',
         icon: 'none'
       });
+      wx.navigateBack();
     }
   },
 
-  bindStatusChange: function(e) {
-    this.setData({
-      newStatus: this.data.statusOptions[e.detail.value]
-    });
-  },
+  takePhoto: function() {
+    wx.chooseImage({
+      count: 1,
+      sizeType: ['compressed'],
+      sourceType: ['camera', 'album'],
+      success: (res) => {
+        const tempFilePath = res.tempFilePaths[0];
+        
+        // 先保存到本地存储
+        let fishList = wx.getStorageSync('fishList') || [];
+        const fishIndex = fishList.findIndex(fish => fish.id === this.data.fishInfo.id);
 
-  notesInput: function(e) {
-    this.setData({
-      newNotes: e.detail.value
-    });
-  },
+        if (fishIndex > -1) {
+          fishList[fishIndex].photoPath = tempFilePath;
+          fishList[fishIndex].photoUploadStatus = 'pending'; // 标记为待上传
+          wx.setStorageSync('fishList', fishList);
 
-  addStatusLog: function() {
-    if (!this.data.newNotes) {
-      wx.showToast({ title: '请填写备注', icon: 'none' });
-      return;
-    }
+          this.setData({
+            'fishInfo.photoPath': tempFilePath
+          });
 
-    let fishList = wx.getStorageSync('fishList') || [];
-    const fishIndex = fishList.findIndex(fish => fish.id === this.data.fishInfo.id);
+          wx.showToast({ title: '照片已保存', icon: 'success' });
 
-    if (fishIndex > -1) {
-      const newLog = {
-        date: util.formatTime(new Date()),
-        status: this.data.newStatus,
-        notes: this.data.newNotes
-      };
-      fishList[fishIndex].statusLog.push(newLog);
-      
-      // 如果状态是“已售出”，则更新销售信息
-      if (this.data.newStatus === '已售出') {
-        this.sellFish(); // 调用单独的销售函数
-        return; // sellFish会处理后续逻辑，这里直接返回
+          // 尝试上传到服务器
+          this.uploadPhoto(tempFilePath, fishIndex);
+        }
+      },
+      fail: (err) => {
+        console.error('选择照片失败:', err);
+        wx.showToast({
+          title: '选择照片失败',
+          icon: 'none'
+        });
       }
+    });
+  },
 
-      wx.setStorageSync('fishList', fishList);
-      this.setData({
-        'fishInfo.statusLog': fishList[fishIndex].statusLog,
-        newNotes: ''
+  uploadPhoto: function(filePath, fishIndex) {
+    // 检查网络状态
+    wx.getNetworkType({
+      success: (res) => {
+        if (res.networkType === 'none') {
+          console.log('无网络连接，照片将在网络恢复后上传');
+          return;
+        }
+
+        // 上传到服务器
+        wx.uploadFile({
+          url: api.uploadPhoto,
+          filePath: filePath,
+          name: 'photo',
+          formData: {
+            fishId: this.data.fishInfo.id
+          },
+          success: (uploadRes) => {
+            try {
+              const result = JSON.parse(uploadRes.data);
+              if (result.success) {
+                // 上传成功，更新本地存储
+                let fishList = wx.getStorageSync('fishList') || [];
+                if (fishList[fishIndex]) {
+                  fishList[fishIndex].photoPath = result.url;
+                  fishList[fishIndex].photoUploadStatus = 'success';
+                  wx.setStorageSync('fishList', fishList);
+                  
+                  this.setData({
+                    'fishInfo.photoPath': result.url
+                  });
+                  
+                  console.log('照片上传成功');
+                }
+              }
+            } catch (e) {
+              console.error('解析上传结果失败:', e);
+            }
+          },
+          fail: (err) => {
+            console.error('照片上传失败:', err);
+            // 上传失败，保持本地照片，标记为上传失败
+            let fishList = wx.getStorageSync('fishList') || [];
+            if (fishList[fishIndex]) {
+              fishList[fishIndex].photoUploadStatus = 'failed';
+              wx.setStorageSync('fishList', fishList);
+            }
+          }
+        });
+      }
+    });
+  },
+
+  previewPhoto: function() {
+    if (this.data.fishInfo.photoPath) {
+      wx.previewImage({
+        urls: [this.data.fishInfo.photoPath],
+        current: this.data.fishInfo.photoPath
       });
-      wx.showToast({ title: '状态已更新' });
     }
   },
 
@@ -158,7 +164,7 @@ Page({
       success: (res) => {
         if (res.confirm && res.content) {
           const soldPrice = parseFloat(res.content);
-          if (isNaN(soldPrice)) {
+          if (isNaN(soldPrice) || soldPrice <= 0) {
             wx.showToast({ title: '请输入有效的价格', icon: 'none' });
             return;
           }
@@ -167,14 +173,13 @@ Page({
           const fishIndex = fishList.findIndex(fish => fish.id === this.data.fishInfo.id);
 
           if (fishIndex > -1) {
-            fishList[fishIndex].isSold = true;
-            fishList[fishIndex].soldDate = util.formatTime(new Date()).split(' ')[0];
+            const currentDate = new Date().toISOString().split('T')[0];
+            
+            // 更新鱼的状态为已售出
+            fishList[fishIndex].status = 'sold';
+            fishList[fishIndex].isSold = true; // 保持向后兼容
+            fishList[fishIndex].soldDate = currentDate;
             fishList[fishIndex].soldPrice = soldPrice;
-            fishList[fishIndex].statusLog.push({
-              date: util.formatTime(new Date()),
-              status: '已售出',
-              notes: `以 ${soldPrice} 元售出`
-            });
 
             wx.setStorageSync('fishList', fishList);
 
@@ -184,129 +189,54 @@ Page({
 
             this.setData({ fishInfo: fishList[fishIndex] });
 
-            wx.showToast({ title: '标记成功' });
-          }
-        }
-      }
-    });
-  },
-
-  scanCode: function() {
-    wx.scanCode({
-      success: (res) => {
-        console.log(res)
-        // 这里可以根据扫描到的条形码内容（res.result）来查找对应的鱼
-        // 由于我们没有实际的条形码生成和扫描硬件，这里仅作演示
-        wx.showToast({
-          title: '扫码成功: ' + res.result,
-          icon: 'none'
-        })
-      }
-    })
-  },
-
-  takePhoto: function() {
-    wx.chooseImage({
-      count: 1,
-      sizeType: ['compressed'],
-      sourceType: ['camera'],
-      success: (res) => {
-        const tempFilePath = res.tempFilePaths[0];
-
-        wx.uploadFile({
-          url: api.uploadFile, // a new api endpoint for file upload
-          filePath: tempFilePath,
-          name: 'file',
-          success: (uploadRes) => {
-            const photoPath = JSON.parse(uploadRes.data).url;
-            let fishList = wx.getStorageSync('fishList') || [];
-            const fishIndex = fishList.findIndex(fish => fish.id === this.data.fishInfo.id);
-
-            if (fishIndex > -1) {
-              fishList[fishIndex].photoPath = photoPath;
-              wx.setStorageSync('fishList', fishList);
-
-              this.setData({
-                'fishInfo.photoPath': photoPath
-              });
-
-              // Update server data
-              wx.request({
-                url: api.updateFish(this.data.fishInfo.id),
-                method: 'PUT',
-                data: fishList[fishIndex],
-                success: () => wx.showToast({ title: '照片上传成功' }),
-                fail: () => wx.showToast({ title: '照片上传失败', icon: 'none' })
-              });
-            }
-          },
-          fail: (err) => {
-            console.error('上传失败', err);
-            wx.showToast({
-              title: '照片上传失败',
-              icon: 'none'
+            wx.showToast({ 
+              title: '标记为已售出', 
+              icon: 'success',
+              success: () => {
+                setTimeout(() => {
+                  wx.navigateBack();
+                }, 1500);
+              }
             });
           }
-        });
+        }
       }
     });
   },
 
-  generateBarcode: function() {
-    const fishId = this.data.fishInfo.id;
-    barcode.code128(wx.createCanvasContext('barcode'), fishId, 300, 150);
+  markAsDead: function() {
+    wx.showModal({
+      title: '确认标记',
+      content: '确定要将此鱼标记为死亡吗？此操作不可撤销。',
+      success: (res) => {
+        if (res.confirm) {
+          let fishList = wx.getStorageSync('fishList') || [];
+          const fishIndex = fishList.findIndex(fish => fish.id === this.data.fishInfo.id);
 
-    // 把canvas转换成图片
-    setTimeout(() => {
-      wx.canvasToTempFilePath({
-        canvasId: 'barcode',
-        success: (res) => {
-          const tempFilePath = res.tempFilePath;
+          if (fishIndex > -1) {
+            const currentDate = new Date().toISOString().split('T')[0];
+            
+            // 更新鱼的状态为死亡
+            fishList[fishIndex].status = 'dead';
+            fishList[fishIndex].deadDate = currentDate;
+            fishList[fishIndex].isSold = false; // 确保不被计算为销售
 
-          wx.uploadFile({
-            url: api.uploadFile,
-            filePath: tempFilePath,
-            name: 'file',
-            success: (uploadRes) => {
-              const barcodePath = JSON.parse(uploadRes.data).url;
-              let fishList = wx.getStorageSync('fishList') || [];
-              const fishIndex = fishList.findIndex(f => f.id === this.data.fishInfo.id);
+            wx.setStorageSync('fishList', fishList);
 
-              if (fishIndex > -1) {
-                fishList[fishIndex].barcode = barcodePath;
-                wx.setStorageSync('fishList', fishList);
+            this.setData({ fishInfo: fishList[fishIndex] });
 
-                this.setData({
-                  'fishInfo.barcode': barcodePath
-                });
-
-                // Update server data
-                wx.request({
-                  url: api.updateFish(this.data.fishInfo.id),
-                  method: 'PUT',
-                  data: fishList[fishIndex],
-                  success: () => wx.showToast({ title: '条形码上传成功' }),
-                  fail: () => wx.showToast({ title: '条形码上传失败', icon: 'none' })
-                });
+            wx.showToast({ 
+              title: '已标记为死亡', 
+              icon: 'none',
+              success: () => {
+                setTimeout(() => {
+                  wx.navigateBack();
+                }, 1500);
               }
-            },
-            fail: (err) => {
-              console.error('上传失败', err);
-              wx.showToast({
-                title: '条形码上传失败',
-                icon: 'none'
-              });
-            }
-          });
-        },
-        fail: (err) => {
-          console.error(err);
-          wx.showToast({
-            title: '条形码生成失败',
-            icon: 'none'
-          });
+            });
+          }
         }
-      }, this);
-    }, 500); // 延迟确保canvas绘制完成
+      }
+    });
   }
 });
