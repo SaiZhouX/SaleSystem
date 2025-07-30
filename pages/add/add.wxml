@@ -2,10 +2,13 @@
 <view class="container">
   <view class="add-options">
     <button class="add-button" bindtap="navigateToAddFish">
-      <text>添加新鱼信息</text>
+      <text>新鱼信息</text>
     </button>
     <button class="add-button" bindtap="navigateToAddExpense">
-      <text>添加固定支出</text>
+      <text>固定支出</text>
+    </button>
+    <button class="add-button" bindtap="navigateToOneTimeExpense">
+      <text>一次性支出</text>
     </button>
 
   </view>

@@ -22,6 +22,10 @@ Page({
     wx.navigateTo({ url: '/pages/add-expense/add-expense' });
   },
 
+  navigateToOneTimeExpense() {
+    wx.navigateTo({ url: '/pages/one-time-expense/one-time-expense' });
+  },
+
   navigateToBatchAddFish() {
     wx.navigateTo({ url: '/pages/batch-add-fish/batch-add-fish' });
   }

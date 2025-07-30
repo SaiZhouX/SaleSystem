@@ -1,0 +1,26 @@
+<!--pages/one-time-expense/one-time-expense.wxml-->
+<view class="container">
+  <form bindsubmit="formSubmit">
+    <view class="form-item">
+      <text class="item-label">项目</text>
+      <input name="item" placeholder="请输入支出项目" />
+    </view>
+    <view class="form-item">
+      <text class="item-label">金额</text>
+      <input name="amount" type="digit" placeholder="请输入金额" />
+    </view>
+    <view class="form-item">
+      <text class="item-label">数量</text>
+      <input name="quantity" type="digit" placeholder="请输入数量" />
+    </view>
+    <view class="form-item">
+      <text class="item-label">日期</text>
+      <picker name="date" mode="date" start="2020-01-01" end="2030-12-31" value="{{dateValue}}" bindchange="bindDateChange">
+        <view class="picker">
+          {{dateValue || '请选择日期'}}
+        </view>
+      </picker>
+    </view>
+    <button form-type="submit" class="submit-btn">确认添加</button>
+  </form>
+</view>
