@@ -1,4 +1,5 @@
 // pages/batch-add-fish/batch-add-fish.js
+const api = require('../../utils/api.js');
 const wxbarcode = require('../../utils/wxbarcode.js');
 
 Page({
@@ -6,14 +7,33 @@ Page({
    * 页面的初始数据
    */
   data: {
-    dateValue: ''
+    dateValue: new Date().toISOString().split('T')[0],
+    submitting: false
+  },
+
+  onLoad() {
+    // 设置默认日期为今天
+    const today = new Date().toISOString().split('T')[0];
+    this.setData({
+      dateValue: today
+    });
+  },
+
+  /**
+   * 日期选择器变化处理函数
+   */
+  bindDateChange: function(e) {
+    this.setData({
+      dateValue: e.detail.value
+    });
   },
 
   /**
    * 表单提交处理函数
    */
   formSubmit: function (e) {
-    const { averagePrice, quantity, date } = e.detail.value;
+    const { averagePrice, quantity } = e.detail.value;
+    const date = this.data.dateValue;
 
     // 表单验证
     if (!averagePrice || !quantity || !date) {
@@ -26,28 +46,61 @@ Page({
 
     const qty = parseInt(quantity);
     const price = parseFloat(averagePrice);
+
+    if (isNaN(price) || price <= 0) {
+      wx.showToast({ title: '请输入有效的进货价格', icon: 'none' });
+      return;
+    }
+
+    if (isNaN(qty) || qty <= 0) {
+      wx.showToast({ title: '请输入有效的鱼数量', icon: 'none' });
+      return;
+    }
+
+    if (this.data.submitting) return;
+    this.setData({ submitting: true });
+
     const fishList = wx.getStorageSync('fishList') || [];
+    const batchNumber = 'B' + Date.now().toString(36).substr(2, 6);
 
     // 批量生成鱼信息
     for (let i = 0; i < qty; i++) {
-      // 生成唯一ID (时间戳 + 随机数)
-      const uniqueId = new Date().getTime().toString() + Math.floor(Math.random() * 1000).toString();
-      // 生成条形码 (使用工具库生成)
-      const barcode = 'F' + uniqueId.substring(6);
+      // 生成唯一ID，与单个添加保持一致的格式
+      const fishId = Math.random().toString(36).substr(2, 10) + Date.now().toString(36);
+      // 生成条形码，与单个添加保持一致
+      const barcode = fishId.substring(0, 12).toUpperCase();
 
-      // 添加鱼信息到列表
-      fishList.push({
-        id: uniqueId,
-        price: price,
+      // 创建新鱼信息对象，与单个添加保持一致的数据结构
+      const newFish = {
+        id: fishId,
+        batch: batchNumber,
+        purchase_date: date,
+        purchasePrice: price,
         barcode: barcode,
-        date: date,
-        photo: '', // 照片后续补拍
-        addedTime: new Date().toISOString()
-      });
+        status: 'instock',
+        timestamp: Date.now()
+      };
+
+      fishList.push(newFish);
     }
 
     // 保存到本地存储
     wx.setStorageSync('fishList', fishList);
+
+    // 同步鱼进货支出到总支出
+    const expenseList = wx.getStorageSync('expenseList') || [];
+    expenseList.push({
+      item: '鱼进货(批量)',
+      amount: price,
+      quantity: qty,
+      total: price * qty,
+      date: date
+    });
+    wx.setStorageSync('expenseList', expenseList);
+
+    // 更新总支出
+    const totalExpense = wx.getStorageSync('totalExpense') || 0;
+    wx.setStorageSync('totalExpense', totalExpense + (price * qty));
 
     // 显示成功提示并返回
     wx.showToast({
@@ -60,5 +113,7 @@ Page({
         }, 2000);
       }
     });
+
+    this.setData({ submitting: false });
   }
 })
