@@ -104,13 +104,14 @@ Page({
     wx.setStorageSync('totalExpense', totalExpense + (price * qty));
 
     // 显示成功提示并返回
+    // 显示成功提示并返回首页
     wx.showToast({
       title: `成功添加${qty}条鱼信息`,
       icon: 'success',
       duration: 2000,
       success: () => {
         setTimeout(() => {
-          wx.navigateBack();
+          wx.switchTab({ url: '/pages/index/index' });
         }, 2000);
       }
     });

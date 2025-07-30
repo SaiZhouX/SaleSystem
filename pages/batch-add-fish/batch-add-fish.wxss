@@ -1,1 +1,63 @@
 /* pages/batch-add-fish/batch-add-fish.wxss */
+.container {
+  padding: 30rpx;
+  box-sizing: border-box;
+  min-height: 100vh;
+  background: #f5f5f5;
+}
+
+.form-item {
+  display: flex;
+  align-items: center;
+  padding: 20rpx 45rpx;
+  border-bottom: 1rpx solid #eee;
+  font-size: 28rpx;
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 120rpx;
+  overflow: hidden;
+}
+
+.item-label {
+  width: 150rpx;
+  white-space: nowrap;
+  flex-shrink: 0;
+  padding-right: 15rpx;
+  color: #333;
+  font-weight: 500;
+  text-overflow: clip;
+}
+
+.picker,
+input {
+  flex: 1;
+  min-width: 40rpx;
+  padding: 20rpx 15rpx;
+  margin-left: 20rpx;
+  color: #333;
+  height: 80rpx;
+  box-sizing: border-box;
+  background: #fff;
+  border: 1rpx solid #ddd;
+  border-radius: 8rpx;
+}
+
+.submit-btn {
+  margin-top: 60rpx;
+  background-color: #1aad19;
+  color: #fff;
+  height: 88rpx;
+  font-size: 32rpx;
+  padding: 0;
+  margin-left: auto;
+  margin-right: auto;
+  border: none;
+  border-radius: 8rpx;
+  box-sizing: border-box;
+  line-height: 88rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 320rpx;
+  white-space: nowrap;
+}

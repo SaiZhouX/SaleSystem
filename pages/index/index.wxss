@@ -115,24 +115,16 @@
   color: white;
 }
 
-.fish-status.healthy {
-  background-color: #28a745;
+.fish-status.status-instock {
+  background-color: #3498db;
 }
 
-.fish-status.sick {
-  background-color: #ffc107;
+.fish-status.status-sold {
+  background-color: #1aad19;
 }
 
-.fish-status.dead {
-  background-color: #6c757d;
-}
-
-.fish-status.sold {
-  background-color: #17a2b8;
-}
-
-.fish-status.instock {
-  background-color: #28a745;
+.fish-status.status-dead {
+  background-color: #e74c3c;
 }
 
 .empty-list {

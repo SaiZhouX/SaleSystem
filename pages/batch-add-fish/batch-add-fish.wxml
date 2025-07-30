@@ -6,7 +6,7 @@
       <input name="averagePrice" type="digit" placeholder="请输入平均价格" />
     </view>
     <view class="form-item">
-      <text class="item-label">鱼的数量</text>
+      <text class="item-label">数量</text>
       <input name="quantity" type="digit" placeholder="请输入鱼的数量" />
     </view>
     <view class="form-item">

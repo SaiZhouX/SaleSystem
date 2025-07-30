@@ -22,10 +22,11 @@ Page({
       success: (res) => {
         console.log('API response:', res.data);
         if (res.statusCode === 200 && res.data && res.data.length > 0) {
-          // 处理API返回数据，统一日期字段
+          // 处理API返回数据，统一日期字段和状态字段
           const processedData = res.data.map(item => ({
             ...item,
-            purchase_date: item.purchase_date || item.purchaseDate || ''
+            purchase_date: item.purchase_date || item.purchaseDate || '',
+            status: item.status || (item.isSold ? 'sold' : 'instock') // 兼容旧数据
           }));
           this.setData({
             fishList: processedData
@@ -46,12 +47,13 @@ Page({
   },
 
   loadLocalData() {
-        console.log('Loading local data');
+    console.log('Loading local data');
     const fishList = wx.getStorageSync('fishList') || [];
-    // 处理本地数据，统一日期字段
+    // 处理本地数据，统一日期字段和状态字段
     const processedData = fishList.map(item => ({
       ...item,
-      purchase_date: item.purchase_date || item.purchaseDate || ''
+      purchase_date: item.purchase_date || item.purchaseDate || '',
+      status: item.status || (item.isSold ? 'sold' : 'instock') // 兼容旧数据
     }));
     this.setData({
       fishList: processedData

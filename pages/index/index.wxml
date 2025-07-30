@@ -27,7 +27,9 @@
           <text class="fish-id">ID: {{item.id}}</text>
           <text class="purchase-date">进货日期: {{item.purchase_date || '未知日期'}}</text>
         </view>
-        <view class="fish-status {{item.isSold ? 'sold' : 'instock'}}">{{item.isSold ? '已售出' : '库存中'}}</view>
+        <view class="fish-status status-{{item.status || 'instock'}}">
+          {{item.status === 'sold' ? '已售出' : (item.status === 'dead' ? '死亡' : '未出售')}}
+        </view>
       </view>
       <view wx:if="{{fishList.length == 0}}" class="empty-list">
         <text>暂无库存</text>

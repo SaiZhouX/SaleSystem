@@ -25,6 +25,7 @@
 }
 .container {
   position: relative;
+
   padding: 30rpx;
   box-sizing: border-box;
   min-height: 100vh;
@@ -53,7 +54,7 @@
   text-overflow: clip;
 }
 .picker,
-input {
+.form-input {
   flex: 1;
   min-width: 40rpx;
   padding: 20rpx 15rpx;
@@ -171,7 +172,7 @@ input {
   letter-spacing: 2rpx;
 }
 
-form .submit-btn {
+.submit-btn {
   margin-top: 60rpx;
   background-color: #1aad19;
   color: #fff;

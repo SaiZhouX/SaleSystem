@@ -46,7 +46,6 @@ Page({
   },
 
   bindDateChange(e) {
-  bindDateChange(e) {
     this.setData({
       purchaseDate: e.detail.value
     });
