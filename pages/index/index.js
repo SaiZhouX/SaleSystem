@@ -195,5 +195,23 @@ Page({
       .catch(err => {
         console.error('验证失败', err);
       });
+  },
+
+  /**
+   * 点击总收入，进入收入详情页面
+   */
+  goToIncomeDetail() {
+    wx.navigateTo({
+      url: '/pages/financial-detail/financial-detail?type=income'
+    });
+  },
+
+  /**
+   * 点击总支出，进入支出详情页面
+   */
+  goToExpenseDetail() {
+    wx.navigateTo({
+      url: '/pages/financial-detail/financial-detail?type=expense'
+    });
   }
 })

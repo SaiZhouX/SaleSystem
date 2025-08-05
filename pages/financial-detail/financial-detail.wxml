@@ -1,0 +1,52 @@
+<!--pages/financial-detail/financial-detail.wxml-->
+<view class="container">
+  <!-- 头部汇总信息 -->
+  <view class="summary-header">
+    <view class="summary-card">
+      <view class="summary-title">{{title}}</view>
+      <view class="summary-amount {{type === 'income' ? 'income-color' : 'expense-color'}}">
+        ¥{{totalAmount}}
+      </view>
+      <view class="summary-count">
+        共 {{detailList.length}} 笔记录
+      </view>
+    </view>
+  </view>
+
+  <!-- 操作按钮 -->
+  <view class="action-bar">
+    <button class="refresh-btn" bindtap="onRefresh">刷新数据</button>
+  </view>
+
+  <!-- 详情列表 -->
+  <view class="detail-list" wx:if="{{!isEmpty}}">
+    <view class="list-header">
+      <text class="header-title">详细记录</text>
+    </view>
+    
+    <scroll-view scroll-y class="list-scroll">
+      <view wx:for="{{detailList}}" wx:key="id" class="detail-item" bindtap="onItemTap" data-item="{{item}}">
+        <view class="item-left">
+          <view class="item-title">{{item.item}}</view>
+          <view class="item-description">{{item.description}}</view>
+          <view class="item-date">{{item.date}}</view>
+        </view>
+        <view class="item-right">
+          <view class="item-amount {{type === 'income' ? 'income-color' : 'expense-color'}}">
+            {{type === 'income' ? '+' : '-'}}¥{{item.amount}}
+          </view>
+          <view class="item-arrow">></view>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{isEmpty}}">
+    <view class="empty-icon">📊</view>
+    <view class="empty-title">暂无{{type === 'income' ? '收入' : '支出'}}记录</view>
+    <view class="empty-description">
+      {{type === 'income' ? '还没有销售记录' : '还没有支出记录'}}
+    </view>
+  </view>
+</view>
