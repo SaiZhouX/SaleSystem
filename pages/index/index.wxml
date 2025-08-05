@@ -1,14 +1,17 @@
 <!--index.wxml-->
 <view class="container">
   <view class="dashboard">
-    <view class="summary-card">
+    <view class="summary-card" bindtap="verifyAndShowAmount">
       <view class="income">
         <text class="label">总收入</text>
-        <text class="amount">¥{{totalIncome}}</text>
+        <text class="amount">¥{{maskedIncome}}</text>
       </view>
       <view class="expense">
         <text class="label">总支出</text>
-        <text class="amount">¥{{totalExpense}}</text>
+        <text class="amount">¥{{maskedExpense}}</text>
+      </view>
+      <view class="verify-tip" wx:if="{{!showRealAmount}}">
+        <text>点击验证查看实际金额</text>
       </view>
     </view>
   </view>

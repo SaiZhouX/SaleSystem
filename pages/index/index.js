@@ -4,6 +4,7 @@ const app = getApp()
 const api = require('../../utils/api.js');
 const DataManager = require('../../utils/managers/DataManager.js');
 const StatusManager = require('../../utils/managers/StatusManager.js');
+const SecurityManager = require('../../utils/managers/SecurityManager.js');
 const { APP_CONFIG } = require('../../utils/constants/AppConstants.js');
 const DateHelper = require('../../utils/helpers/DateHelper.js');
 
@@ -19,6 +20,8 @@ Page({
     this.getTabBar().setData({
       active: 0
     });
+    // 重置安全状态
+    SecurityManager.resetSecurityState();
     this.loadDashboardData();
   },
   // 使用工具类加载仪表板数据
@@ -63,10 +66,18 @@ Page({
   // 使用工具类更新汇总数据
   updateSummary() {
     const summary = DataManager.getSummary();
+    const totalIncome = summary.totalIncome.toFixed(2);
+    const totalExpense = summary.totalExpense.toFixed(2);
+    
+    // 根据安全状态决定是否显示真实金额
     this.setData({
-      totalIncome: summary.totalIncome.toFixed(2),
-      totalExpense: summary.totalExpense.toFixed(2)
+      totalIncome: totalIncome,
+      totalExpense: totalExpense,
+      maskedIncome: SecurityManager.showSensitiveData ? totalIncome : '******',
+      maskedExpense: SecurityManager.showSensitiveData ? totalExpense : '******',
+      showRealAmount: SecurityManager.showSensitiveData
     });
+    
     this.filterAndSortFishList();
   },
 
@@ -146,8 +157,14 @@ Page({
             fishList: [],
             filteredFishList: [],
             totalIncome: '0.00',
-            totalExpense: '0.00'
+            totalExpense: '0.00',
+            maskedIncome: '******',
+            maskedExpense: '******',
+            showRealAmount: false
           });
+          
+          // 重置安全状态
+          SecurityManager.resetSecurityState();
           
           wx.showToast({
             title: '所有数据已清除',
@@ -156,5 +173,27 @@ Page({
         }
       }
     });
+  },
+  
+  /**
+   * 验证身份并显示真实金额
+   */
+  verifyAndShowAmount() {
+    if (SecurityManager.showSensitiveData) {
+      // 如果已经显示了真实金额，则隐藏
+      SecurityManager.resetSecurityState();
+      this.updateSummary();
+      return;
+    }
+    
+    // 执行人脸识别
+    SecurityManager.performFaceID()
+      .then(() => {
+        // 验证成功，更新显示
+        this.updateSummary();
+      })
+      .catch(err => {
+        console.error('验证失败', err);
+      });
   }
 })

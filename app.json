@@ -10,6 +10,11 @@
     "pages/batch-add-fish/batch-add-fish",
     "pages/fish-list/fish-list"
   ],
+  "permission": {
+    "scope.soterAuthentication": {
+      "desc": "用于验证身份以查看敏感金额信息"
+    }
+  },
   "window":{
     "backgroundTextStyle":"light",
     "navigationBarBackgroundColor": "#fff",
