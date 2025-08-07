@@ -1,0 +1,32 @@
+<view class="container">
+  <view class="header">
+    <text class="title">扫码测试页面</text>
+  </view>
+  
+  <view class="generate-section">
+    <button class="generate-btn" bindtap="onGenerateQRCode">
+      <text class="generate-text">草料二维码生成</text>
+    </button>
+    
+    <view class="qrcode-display" wx:if="{{showQRCode}}">
+      <image wx:if="{{qrcodeImageUrl}}" class="qrcode-image" src="{{qrcodeImageUrl}}" mode="aspectFit"></image>
+      <canvas wx:else canvas-id="qrcode-canvas" class="qrcode-canvas"></canvas>
+    </view>
+  </view>
+  
+  <view class="scan-section">
+    <button class="scan-btn" bindtap="onScanCode">
+      <image class="scan-icon" src="/images/tabbar/add.png" mode="aspectFit"></image>
+      <text class="scan-text">扫码查询</text>
+    </button>
+  </view>
+  
+  <view class="result-section" wx:if="{{scanResult}}">
+    <view class="result-title">扫码结果：</view>
+    <view class="result-content">{{scanResult}}</view>
+  </view>
+  
+  <view class="no-result" wx:if="{{!scanResult}}">
+    <text class="no-result-text">暂无扫码结果</text>
+  </view>
+</view>

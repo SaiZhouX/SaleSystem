@@ -9,7 +9,8 @@
     "pages/fish-detail/fish-detail",
     "pages/batch-add-fish/batch-add-fish",
     "pages/fish-list/fish-list",
-    "pages/financial-detail/financial-detail"
+    "pages/financial-detail/financial-detail",
+    "pages/scan-test/scan-test"
   ],
   "permission": {
     "scope.soterAuthentication": {

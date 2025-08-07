@@ -115,6 +115,12 @@ Page({
     });
   },
 
+  goToScanTest() {
+    wx.navigateTo({
+      url: '/pages/scan-test/scan-test'
+    });
+  },
+
   scanCode: function() {
     wx.scanCode({
       success: (res) => {
