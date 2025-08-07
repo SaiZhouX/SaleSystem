@@ -1,7 +1,7 @@
 // pages/fish-detail/fish-detail.js
 const DataManager = require('../../utils/managers/DataManager.js');
 const PhotoManager = require('../../utils/managers/PhotoManager.js');
-const BarcodeManager = require('../../utils/managers/BarcodeManager.js');
+const QRCodeManager = require('../../utils/managers/QRCodeManager.js');
 const StatusManager = require('../../utils/managers/StatusManager.js');
 const FormValidator = require('../../utils/validators/FormValidator.js');
 const { APP_CONFIG } = require('../../utils/constants/AppConstants.js');
@@ -9,7 +9,8 @@ const { APP_CONFIG } = require('../../utils/constants/AppConstants.js');
 Page({
   data: {
     fishInfo: null,
-    barcodeError: false
+    qrcodeError: false,
+    qrcodeImageUrl: ''
   },
 
   onLoad(options) {
@@ -25,13 +26,10 @@ Page({
       this.setData({
         fishInfo: fishInfo
       }, () => {
-        // 使用工具类生成条形码
-        if (fishInfo.barcode) {
-          BarcodeManager.initBarcodeDisplay('barcode', fishInfo.id, (result) => {
-            if (!result.success) {
-              this.setData({ barcodeError: true });
-            }
-          });
+        // 使用工具类生成在线QR码
+        if (fishInfo.qrcode || fishInfo.barcode || fishInfo.id) {
+          const qrcodeUrl = QRCodeManager.generateOnlineQRCodeUrl(fishInfo.id, 300);
+          this.setData({ qrcodeImageUrl: qrcodeUrl });
         }
       });
     } else {
@@ -142,6 +140,26 @@ Page({
           }
         }
       }
+    });
+  },
+
+  /**
+   * QR码图片加载成功
+   */
+  onQRImageLoad: function(e) {
+    console.log('QR码图片加载成功:', e);
+  },
+
+  /**
+   * QR码图片加载失败
+   */
+  onQRImageError: function(e) {
+    console.error('QR码图片加载失败:', e);
+    this.setData({ qrcodeError: true });
+    wx.showToast({
+      title: 'QR码加载失败',
+      icon: 'none',
+      duration: 2000
     });
   }
 });

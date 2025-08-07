@@ -124,13 +124,19 @@ Page({
   scanCode: function() {
     wx.scanCode({
       success: (res) => {
-        const fishId = res.result;
-        const fishList = wx.getStorageSync('fishList') || [];
-        const fishExists = fishList.some(fish => fish.id === fishId);
+        const scannedData = res.result;
+        const fishList = DataManager.getFishList();
+        
+        // 支持多种匹配方式：QR码数据、条形码（向后兼容）、鱼ID
+        const foundFish = fishList.find(fish => 
+          fish.id === scannedData || 
+          fish.barcode === scannedData ||
+          fish.qrcode === scannedData
+        );
 
-        if (fishExists) {
+        if (foundFish) {
           wx.navigateTo({
-            url: `/pages/fish-detail/fish-detail?id=${fishId}`
+            url: `/pages/fish-detail/fish-detail?id=${foundFish.id}`
           });
         } else {
           wx.showToast({

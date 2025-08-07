@@ -1,4 +1,4 @@
-const BarcodeManager = require('../../utils/managers/BarcodeManager');
+const QRCodeManager = require('../../utils/managers/QRCodeManager');
 const { drawQRCodeOnCanvas } = require('../../utils/qrcode-generator');
 
 Page({
@@ -13,7 +13,7 @@ Page({
   },
 
   /**
-   * 生成草料二维码
+   * 生成QR码（使用鱼的唯一ID）
    */
   onGenerateQRCode: function() {
     const self = this;
@@ -22,20 +22,22 @@ Page({
       title: '生成中...'
     });
 
-    // 使用在线二维码生成服务
-    const text = encodeURIComponent('hello world');
-    // 使用 qr-server.com 的免费API生成二维码
-    const qrcodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${text}`;
+    // 生成一个示例鱼ID用于测试
+    const testFishId = 'fish_' + Math.random().toString(36).substr(2, 10);
+    
+    // 使用QRCodeManager生成在线QR码URL
+    const qrcodeUrl = QRCodeManager.generateOnlineQRCodeUrl(testFishId, 200);
     
     setTimeout(() => {
       self.setData({
         showQRCode: true,
-        qrcodeImageUrl: qrcodeUrl
+        qrcodeImageUrl: qrcodeUrl,
+        scanResult: `测试鱼ID: ${testFishId}`
       });
       
       wx.hideLoading();
       wx.showToast({
-        title: '二维码生成成功',
+        title: 'QR码生成成功',
         icon: 'success',
         duration: 2000
       });

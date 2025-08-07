@@ -1,7 +1,7 @@
 // pages/add-fish/add-fish.js
 const DataManager = require('../../utils/managers/DataManager.js');
 const PhotoManager = require('../../utils/managers/PhotoManager.js');
-const BarcodeManager = require('../../utils/managers/BarcodeManager.js');
+const QRCodeManager = require('../../utils/managers/QRCodeManager.js');
 const FormValidator = require('../../utils/validators/FormValidator.js');
 const DateHelper = require('../../utils/helpers/DateHelper.js');
 const { APP_CONFIG } = require('../../utils/constants/AppConstants.js');
@@ -13,8 +13,8 @@ Page({
     purchaseDate: '',
     purchasePrice: '',
     photoPath: '',
-    barcode: '',
-    barcodeError: false,
+    qrcode: '',
+    qrcodeError: false,
     submitting: false
   },
 
@@ -22,19 +22,19 @@ Page({
     // 使用工具类生成ID和批次号
     const fishId = DataManager.generateFishId();
     const batchNumber = DataManager.generateBatchNumber();
-    const barcode = BarcodeManager.generateBarcodeData(fishId);
+    const qrcode = QRCodeManager.generateQRCodeData(fishId);
     
     this.setData({
       fishId: fishId,
       batchNumber: batchNumber,
-      barcode: barcode,
+      qrcode: qrcode,
       purchaseDate: DateHelper.getCurrentDate()
     });
 
-    // 使用工具类生成条形码
-    BarcodeManager.initBarcodeDisplay('barcode', fishId, (result) => {
+    // 使用工具类生成QR码
+    QRCodeManager.initQRCodeDisplay('qrcode', fishId, (result) => {
       if (!result.success) {
-        this.setData({ barcodeError: true });
+        this.setData({ qrcodeError: true });
       }
     });
   },
@@ -93,7 +93,7 @@ Page({
         batch: this.data.batchNumber,
         purchase_date: validationResult.data.purchaseDate,
         purchasePrice: validationResult.data.purchasePrice,
-        barcode: this.data.barcode,
+        qrcode: this.data.qrcode,
         photoPath: this.data.photoPath || '',
         status: APP_CONFIG.FISH_STATUS.INSTOCK,
         notes: validationResult.data.notes,

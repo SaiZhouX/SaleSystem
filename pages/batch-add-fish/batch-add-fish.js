@@ -1,6 +1,6 @@
 // pages/batch-add-fish/batch-add-fish.js
 const DataManager = require('../../utils/managers/DataManager.js');
-const BarcodeManager = require('../../utils/managers/BarcodeManager.js');
+const QRCodeManager = require('../../utils/managers/QRCodeManager.js');
 const FormValidator = require('../../utils/validators/FormValidator.js');
 const DateHelper = require('../../utils/helpers/DateHelper.js');
 const { APP_CONFIG } = require('../../utils/constants/AppConstants.js');
@@ -86,14 +86,14 @@ Page({
     for (let i = 0; i < quantity; i++) {
       // 生成唯一ID，每个鱼有微小时间差异
       const fishId = Math.random().toString(36).substr(2, 10) + (baseTimestamp + i).toString(36);
-      const barcode = BarcodeManager.generateBarcodeData(fishId);
+      const qrcode = QRCodeManager.generateQRCodeData(fishId);
 
       const newFish = {
         id: fishId,
         batch: batchNumber,
         purchase_date: date,
         purchasePrice: price,
-        barcode: barcode,
+        qrcode: qrcode,
         status: APP_CONFIG.FISH_STATUS.INSTOCK,
         timestamp: Date.now()
       };

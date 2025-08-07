@@ -25,10 +25,10 @@
       </view>
     </view>
 
-    <view class="barcode-section">
-      <view class="section-title">条形码</view>
-      <canvas canvas-id="barcode" class="barcode-canvas" wx:if="{{!barcodeError}}"></canvas>
-      <view class="barcode-text-display" wx:if="{{barcodeError}}">{{barcode}}</view>
+    <view class="qrcode-section">
+      <view class="section-title">QR码</view>
+      <canvas canvas-id="qrcode" class="qrcode-canvas" wx:if="{{!qrcodeError}}"></canvas>
+      <view class="qrcode-text-display" wx:if="{{qrcodeError}}">{{qrcode}}</view>
     </view>
     <view class="form-item">
       <text class="item-label">备注信息</text>

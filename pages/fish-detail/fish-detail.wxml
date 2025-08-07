@@ -1,5 +1,5 @@
 <!--pages/fish-detail/fish-detail.wxml-->
-<view class="container" wx:if="{{fishInfo}}">
+<scroll-view class="container" scroll-y="true" wx:if="{{fishInfo}}">
   <view class="photo-section">
     <view class="section-title">鱼类照片</view>
     <view class="photo-container">
@@ -41,10 +41,10 @@
     </view>
   </view>
 
-  <view class="barcode-section" wx:if="{{fishInfo.barcode}}">
-    <view class="section-title">条形码</view>
-    <canvas canvas-id="barcode" class="barcode-canvas" wx:if="{{!barcodeError}}"></canvas>
-    <view class="barcode-text" wx:if="{{barcodeError}}">{{fishInfo.barcode}}</view>
+  <view class="qrcode-section" wx:if="{{fishInfo.qrcode || fishInfo.barcode || fishInfo.id}}">
+    <view class="section-title">QR码</view>
+    <image wx:if="{{qrcodeImageUrl}}" src="{{qrcodeImageUrl}}" class="qrcode-image" mode="aspectFit" bindload="onQRImageLoad" binderror="onQRImageError"></image>
+    <view class="qrcode-text" wx:if="{{qrcodeError}}">{{fishInfo.qrcode || fishInfo.barcode || fishInfo.id}}</view>
   </view>
 
   <!-- 操作按钮区域 - 只有未出售状态才显示 -->
@@ -55,4 +55,4 @@
     </view>
   </view>
 
-</view>
+</scroll-view>

@@ -34,11 +34,17 @@ const APP_CONFIG = {
     dead: '#e74c3c'        // 红色
   },
   
-  // 条形码配置
+  // 条形码配置（保持向后兼容）
   BARCODE_CONFIG: {
     WIDTH: 300,
     HEIGHT: 80,
     LENGTH: 12
+  },
+  
+  // QR码配置
+  QRCODE_CONFIG: {
+    SIZE: 280,
+    ONLINE_SIZE: 200
   },
   
   // 照片配置
