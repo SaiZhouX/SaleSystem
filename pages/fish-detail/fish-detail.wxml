@@ -1,5 +1,5 @@
 <!--pages/fish-detail/fish-detail.wxml-->
-<scroll-view class="container" scroll-y="true" wx:if="{{fishInfo}}">
+<view class="container" wx:if="{{fishInfo}}">
   <view class="photo-section">
     <view class="section-title">鱼类照片</view>
     <view class="photo-container">
@@ -55,4 +55,4 @@
     </view>
   </view>
 
-</scroll-view>
+</view>

@@ -1,3 +1,4 @@
 {
-  "navigationBarTitleText": "鱼详情"
+  "navigationBarTitleText": "鱼详情",
+  "disableScroll": true
 }
