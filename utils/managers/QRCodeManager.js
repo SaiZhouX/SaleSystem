@@ -173,7 +173,9 @@ class QRCodeManager {
   static generateOnlineQRCodeUrl(fishId, size = 200) {
     const qrData = this.generateQRCodeData(fishId);
     const encodedData = encodeURIComponent(qrData);
-    return `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodedData}`;
+    
+    // 使用QRCode Monkey API作为唯一的QR码生成接口
+    return `https://api.qrcode-monkey.com/qr/custom?data=${encodedData}&size=${size}&download=false`;
   }
 }
 
