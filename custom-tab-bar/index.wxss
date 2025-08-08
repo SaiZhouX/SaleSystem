@@ -3,13 +3,13 @@
   bottom: 0;
   left: 0;
   right: 0;
-  height: 100rpx;
+  height: 140rpx; /* 进一步增加高度 */
   background: white;
   display: flex;
   padding-bottom: env(safe-area-inset-bottom);
-  align-items: center;
+  align-items: flex-start; /* 将图标靠近上边 */
   justify-content: space-around;
-  padding: 0 20rpx;
+  padding: 0 20rpx 0; /* 移除顶部内边距 */
 }
 
 .tab-bar-border {
@@ -26,20 +26,28 @@
   flex: 1;
   text-align: center;
   display: flex;
-  justify-content: center;
+  justify-content: flex-start; /* 改为靠上对齐 */
   align-items: center;
   flex-direction: column;
+  padding-top: 25rpx; /* 增加顶部内边距，适应新的tab栏高度 */
+}
+
+/* 为中间按钮创建特殊的类 */
+.tab-bar-item-center {
+  padding-top: 0; /* 移除顶部内边距 */
+  align-items: center; /* 保持水平居中 */
 }
 
 .tab-bar-item cover-image {
-  width: 58rpx;
-  height: 58rpx;
+  width: 60rpx;
+  height: 60rpx;
+  margin-bottom: 6rpx; /* 增加图标与文字的间距 */
 }
 
 .tab-bar-item cover-view {
   font-size: 22rpx;
   color: #999;
-  margin-top: 4rpx;
+  margin-top: 6rpx;
 }
 .tab-bar-item.active cover-view {
   color: #FF6B00;
@@ -57,7 +65,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: -16rpx;
+  margin-top: -66rpx; /* 调整突出按钮的位置，适应新的tab栏高度 */
   box-shadow: 0 4rpx 12rpx rgba(255, 107, 0, 0.3);
   overflow: hidden;
   position: relative;
