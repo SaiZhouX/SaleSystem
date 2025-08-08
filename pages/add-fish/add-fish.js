@@ -15,6 +15,7 @@ Page({
     photoPath: '',
     qrcode: '',
     qrcodeError: false,
+    qrcodeImageUrl: '',
     submitting: false
   },
 
@@ -24,14 +25,18 @@ Page({
     const batchNumber = DataManager.generateBatchNumber();
     const qrcode = QRCodeManager.generateQRCodeData(fishId);
     
+    // 生成在线QR码URL（与鱼详情页面保持一致）
+    const qrcodeUrl = QRCodeManager.generateOnlineQRCodeUrl(fishId, 300);
+    
     this.setData({
       fishId: fishId,
       batchNumber: batchNumber,
       qrcode: qrcode,
+      qrcodeImageUrl: qrcodeUrl,
       purchaseDate: DateHelper.getCurrentDate()
     });
 
-    // 使用工具类生成QR码
+    // 使用工具类生成QR码（作为备用）
     QRCodeManager.initQRCodeDisplay('qrcode', fishId, (result) => {
       if (!result.success) {
         this.setData({ qrcodeError: true });
@@ -70,13 +75,12 @@ Page({
 
   // 使用工具类处理表单提交
   formSubmit(e) {
-    const { purchasePrice, purchaseDate, notes } = e.detail.value;
+    const { purchasePrice, purchaseDate } = e.detail.value;
 
     // 使用表单验证工具类
     const validationResult = FormValidator.validateAddFishForm({
       purchaseDate: purchaseDate,
-      purchasePrice: purchasePrice,
-      notes: notes
+      purchasePrice: purchasePrice
     });
 
     if (!FormValidator.handleFormValidation(validationResult)) {
@@ -96,7 +100,6 @@ Page({
         qrcode: this.data.qrcode,
         photoPath: this.data.photoPath || '',
         status: APP_CONFIG.FISH_STATUS.INSTOCK,
-        notes: validationResult.data.notes,
         timestamp: Date.now()
       };
 
@@ -141,6 +144,26 @@ Page({
       complete: () => {
         this.setData({ submitting: false });
       }
+    });
+  },
+
+  /**
+   * QR码图片加载成功
+   */
+  onQRImageLoad: function(e) {
+    console.log('QR码图片加载成功:', e);
+  },
+
+  /**
+   * QR码图片加载失败
+   */
+  onQRImageError: function(e) {
+    console.error('QR码图片加载失败:', e);
+    this.setData({ qrcodeError: true });
+    wx.showToast({
+      title: 'QR码加载失败',
+      icon: 'none',
+      duration: 2000
     });
   }
 })

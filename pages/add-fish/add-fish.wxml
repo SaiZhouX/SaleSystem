@@ -25,14 +25,11 @@
       </view>
     </view>
 
-    <view class="qrcode-section">
+    <view class="qrcode-section" wx:if="{{fishId}}">
       <view class="section-title">QR码</view>
-      <canvas canvas-id="qrcode" class="qrcode-canvas" wx:if="{{!qrcodeError}}"></canvas>
+      <image wx:if="{{qrcodeImageUrl}}" src="{{qrcodeImageUrl}}" class="qrcode-image" mode="aspectFill" bindload="onQRImageLoad" binderror="onQRImageError"></image>
+      <canvas wx:if="{{!qrcodeImageUrl && !qrcodeError}}" canvas-id="qrcode" class="qrcode-canvas"></canvas>
       <view class="qrcode-text-display" wx:if="{{qrcodeError}}">{{qrcode}}</view>
-    </view>
-    <view class="form-item">
-      <text class="item-label">备注信息</text>
-      <input class="notes-input form-input" name="notes" placeholder="请输入备注信息" />
     </view>
     <button form-type="submit" class="submit-btn" style="width: 320rpx !important; box-sizing: border-box !important; padding: 0 !important;">确认添加</button>
   </form>
