@@ -21,18 +21,32 @@ Page({
   // 使用工具类加载鱼信息数据
   loadFishData(fishId) {
     const fishInfo = DataManager.getFishById(fishId);
+    console.log('加载鱼信息，ID:', fishId);
+    console.log('获取到的鱼信息:', fishInfo);
 
     if (fishInfo) {
       this.setData({
         fishInfo: fishInfo
       }, () => {
-        // 只使用保存的QR码图片路径
-        if (fishInfo.qrcodePath) {
+        // 优先使用保存的QR码在线URL
+        if (fishInfo.qrcodeUrl) {
+          console.log('使用保存的QR码在线URL:', fishInfo.qrcodeUrl);
+          this.setData({ qrcodeImageUrl: fishInfo.qrcodeUrl });
+        } 
+        // 兼容旧版本：检查是否有保存的QR码图片路径
+        else if (fishInfo.qrcodePath) {
+          console.log('使用保存的QR码图片路径:', fishInfo.qrcodePath);
           this.setData({ qrcodeImageUrl: fishInfo.qrcodePath });
+        } 
+        // 如果都没有，则生成在线URL（兼容旧数据）
+        else if (fishInfo.qrcode || fishInfo.barcode || fishInfo.id) {
+          console.log('生成QR码在线URL作为兼容处理');
+          const qrcodeUrl = QRCodeManager.generateOnlineQRCodeUrl(fishInfo.id, 300);
+          this.setData({ qrcodeImageUrl: qrcodeUrl });
         } else {
-          // 如果没有保存的QR码图片路径，则显示QR码未生成
+          // 完全没有QR码信息
+          console.log('该鱼没有QR码信息，显示未生成提示');
           this.setData({ qrcodeError: true });
-          console.log('该鱼没有保存QR码图片路径');
         }
       });
     } else {

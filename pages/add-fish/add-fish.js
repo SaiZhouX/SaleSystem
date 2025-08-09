@@ -91,16 +91,14 @@ Page({
     this.setData({ submitting: true });
 
     try {
-      // 生成并保存QR码图片
-      let qrcodePath = '';
+      // 生成QR码在线URL（不保存本地文件）
+      let qrcodeUrl = '';
       try {
-        const qrResult = await QRCodeManager.generateAndSaveQRCode(this.data.fishId, 300);
-        if (qrResult.success) {
-          qrcodePath = qrResult.qrcodePath;
-        }
+        console.log('生成QR码在线URL，鱼ID:', this.data.fishId);
+        qrcodeUrl = QRCodeManager.generateOnlineQRCodeUrl(this.data.fishId, 300);
+        console.log('QR码在线URL:', qrcodeUrl);
       } catch (qrError) {
-        console.error('生成QR码图片失败:', qrError);
-        // 继续执行，即使QR码生成失败
+        console.error('生成QR码URL失败:', qrError);
       }
 
       // 创建新鱼信息对象
@@ -110,14 +108,18 @@ Page({
         purchase_date: validationResult.data.purchaseDate,
         purchasePrice: validationResult.data.purchasePrice,
         qrcode: this.data.qrcode,
-        qrcodePath: qrcodePath, // 保存QR码图片路径
+        qrcodeUrl: qrcodeUrl, // 保存QR码在线URL
         photoPath: this.data.photoPath || '',
         status: APP_CONFIG.FISH_STATUS.INSTOCK,
         timestamp: Date.now()
       };
 
+      console.log('准备保存的鱼信息:', newFish);
+
       // 使用数据管理工具类保存数据
       DataManager.addFish(newFish);
+      
+      console.log('鱼信息已保存到本地存储');
 
       // 同步到服务器
       this.syncToServer(newFish);
