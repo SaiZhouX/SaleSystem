@@ -5,6 +5,8 @@ const api = require('../../utils/api.js');
 const DataManager = require('../../utils/managers/DataManager.js');
 const StatusManager = require('../../utils/managers/StatusManager.js');
 const SecurityManager = require('../../utils/managers/SecurityManager.js');
+const ErrorHandler = require('../../utils/helpers/ErrorHandler.js');
+const PageHelper = require('../../utils/helpers/PageHelper.js');
 const { APP_CONFIG } = require('../../utils/constants/AppConstants.js');
 const DateHelper = require('../../utils/helpers/DateHelper.js');
 
@@ -57,10 +59,7 @@ Page({
     const processedData = DataManager.processApiData(fishList);
     this.setData({ fishList: processedData });
     this.filterAndSortFishList();
-    wx.showToast({
-      title: '已加载本地数据',
-      icon: 'none'
-    });
+    ErrorHandler.showError('已加载本地数据');
   },
 
   // 使用工具类更新汇总数据
@@ -104,15 +103,11 @@ Page({
 
   goToFishDetail(e) {
     const fishId = e.currentTarget.dataset.id;
-    wx.navigateTo({
-      url: `/pages/fish-detail/fish-detail?id=${fishId}`
-    });
+    PageHelper.safeNavigate(`/pages/fish-detail/fish-detail?id=${fishId}`, 0);
   },
 
   goToFishList() {
-    wx.navigateTo({
-      url: '/pages/fish-list/fish-list'
-    });
+    PageHelper.safeNavigate('/pages/fish-list/fish-list', 0);
   },
 
 
@@ -130,44 +125,39 @@ Page({
   },
 
   // 使用工具类清理所有数据
-  clearAllData() {
-    // 先进行人脸验证
-    SecurityManager.performFaceID()
-      .then(() => {
-        // 验证成功后显示确认对话框
-        wx.showModal({
-          title: '确认清理',
-          content: '确定要清除所有数据吗？此操作将删除所有鱼信息、收入和支出记录，不可恢复。',
-          success: (res) => {
-            if (res.confirm) {
-              // 使用数据管理工具类清除所有数据
-              DataManager.clearAllData();
-              
-              // 更新页面数据
-              this.setData({
-                fishList: [],
-                filteredFishList: [],
-                totalIncome: '0.00',
-                totalExpense: '0.00',
-                maskedIncome: '******',
-                maskedExpense: '******',
-                showRealAmount: false
-              });
-              
-              // 重置安全状态
-              SecurityManager.resetSecurityState();
-              
-              wx.showToast({
-                title: '所有数据已清除',
-                icon: 'success'
-              });
-            }
-          }
-        });
-      })
-      .catch(err => {
-        console.error('验证失败，无法清理数据', err);
-      });
+  async clearAllData() {
+    try {
+      // 先进行人脸验证
+      await SecurityManager.performFaceID();
+      
+      // 验证成功后显示确认对话框
+      await PageHelper.handleConfirmAction(
+        '确认清理',
+        '确定要清除所有数据吗？此操作将删除所有鱼信息、收入和支出记录，不可恢复。',
+        async () => {
+          // 使用数据管理工具类清除所有数据
+          DataManager.clearAllData();
+          
+          // 更新页面数据
+          this.setData({
+            fishList: [],
+            filteredFishList: [],
+            totalIncome: '0.00',
+            totalExpense: '0.00',
+            maskedIncome: '******',
+            maskedExpense: '******',
+            showRealAmount: false
+          });
+          
+          // 重置安全状态
+          SecurityManager.resetSecurityState();
+          
+          ErrorHandler.showSuccess('所有数据已清除');
+        }
+      );
+    } catch (err) {
+      console.error('验证失败，无法清理数据', err);
+    }
   },
   
   /**
@@ -196,17 +186,13 @@ Page({
    * 点击总收入，进入收入详情页面
    */
   goToIncomeDetail() {
-    wx.navigateTo({
-      url: '/pages/financial-detail/financial-detail?type=income'
-    });
+    PageHelper.safeNavigate('/pages/financial-detail/financial-detail?type=income', 0);
   },
 
   /**
    * 点击总支出，进入支出详情页面
    */
   goToExpenseDetail() {
-    wx.navigateTo({
-      url: '/pages/financial-detail/financial-detail?type=expense'
-    });
+    PageHelper.safeNavigate('/pages/financial-detail/financial-detail?type=expense', 0);
   }
 })

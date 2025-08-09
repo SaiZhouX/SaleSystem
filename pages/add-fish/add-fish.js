@@ -4,6 +4,9 @@ const PhotoManager = require('../../utils/managers/PhotoManager.js');
 const QRCodeManager = require('../../utils/managers/QRCodeManager.js');
 const FormValidator = require('../../utils/validators/FormValidator.js');
 const DateHelper = require('../../utils/helpers/DateHelper.js');
+const ErrorHandler = require('../../utils/helpers/ErrorHandler.js');
+const QRCodeHelper = require('../../utils/helpers/QRCodeHelper.js');
+const PageHelper = require('../../utils/helpers/PageHelper.js');
 const { APP_CONFIG } = require('../../utils/constants/AppConstants.js');
 
 Page({
@@ -23,25 +26,17 @@ Page({
     // 使用工具类生成ID和批次号
     const fishId = DataManager.generateFishId();
     const batchNumber = DataManager.generateBatchNumber();
-    const qrcode = QRCodeManager.generateQRCodeData(fishId);
-    
-    // 生成在线QR码URL（与鱼详情页面保持一致）
-    const qrcodeUrl = QRCodeManager.generateOnlineQRCodeUrl(fishId, 300);
+    const qrcode = QRCodeHelper.generateQRCodeData(fishId);
     
     this.setData({
       fishId: fishId,
       batchNumber: batchNumber,
       qrcode: qrcode,
-      qrcodeImageUrl: qrcodeUrl,
       purchaseDate: DateHelper.getCurrentDate()
     });
 
-    // 使用工具类生成QR码（作为备用）
-    QRCodeManager.initQRCodeDisplay('qrcode', fishId, (result) => {
-      if (!result.success) {
-        this.setData({ qrcodeError: true });
-      }
-    });
+    // 使用统一的QR码显示工具
+    QRCodeHelper.setupQRCodeDisplay(this, fishId);
   },
 
   navigateToBatchAddFish() {
@@ -87,82 +82,51 @@ Page({
       return;
     }
 
-    if (this.data.submitting) return;
-    this.setData({ submitting: true });
+    // 使用统一的表单提交处理
+    await PageHelper.handleFormSubmit(
+      this,
+      async () => {
+        // 生成QR码在线URL
+        const qrcodeUrl = QRCodeHelper.generateOnlineQRCodeUrl(this.data.fishId);
 
-    try {
-      // 生成QR码在线URL（不保存本地文件）
-      let qrcodeUrl = '';
-      try {
-        console.log('生成QR码在线URL，鱼ID:', this.data.fishId);
-        qrcodeUrl = QRCodeManager.generateOnlineQRCodeUrl(this.data.fishId, 300);
-        console.log('QR码在线URL:', qrcodeUrl);
-      } catch (qrError) {
-        console.error('生成QR码URL失败:', qrError);
-      }
+        // 创建新鱼信息对象
+        const newFish = {
+          id: this.data.fishId,
+          batch: this.data.batchNumber,
+          purchase_date: validationResult.data.purchaseDate,
+          purchasePrice: validationResult.data.purchasePrice,
+          qrcode: this.data.qrcode,
+          qrcodeUrl: qrcodeUrl,
+          photoPath: this.data.photoPath || '',
+          status: APP_CONFIG.FISH_STATUS.INSTOCK,
+          timestamp: Date.now(),
+          needsSync: true,
+          lastModified: Date.now()
+        };
 
-      // 创建新鱼信息对象
-      const newFish = {
-        id: this.data.fishId,
-        batch: this.data.batchNumber,
-        purchase_date: validationResult.data.purchaseDate,
-        purchasePrice: validationResult.data.purchasePrice,
-        qrcode: this.data.qrcode,
-        qrcodeUrl: qrcodeUrl, // 保存QR码在线URL
-        photoPath: this.data.photoPath || '',
-        status: APP_CONFIG.FISH_STATUS.INSTOCK,
-        timestamp: Date.now()
-      };
+        console.log('准备保存的鱼信息:', newFish);
 
-      console.log('准备保存的鱼信息:', newFish);
-
-      // 标记数据需要同步
-      newFish.needsSync = true;
-      newFish.lastModified = Date.now();
-
-      // 使用数据管理工具类保存数据
-      DataManager.addFish(newFish);
-      
-      console.log('鱼信息已保存到本地存储');
-
-      // 显示成功提示并返回
-      wx.showToast({ 
-        title: '添加成功', 
-        icon: 'success' 
-      });
-      
-      setTimeout(() => {
-        wx.navigateBack();
-      }, 1500);
-
-    } catch (error) {
-      console.error('添加鱼信息失败:', error);
-      wx.showToast({ 
-        title: '添加失败', 
-        icon: 'none' 
-      });
-    } finally {
-      this.setData({ submitting: false });
-    }
+        // 使用数据管理工具类保存数据
+        DataManager.addFish(newFish);
+        
+        console.log('鱼信息已保存到本地存储');
+        return { success: true };
+      },
+      APP_CONFIG.SUCCESS_MESSAGES.ADD_SUCCESS
+    );
   },
 
   /**
    * QR码图片加载成功
    */
   onQRImageLoad: function(e) {
-    console.log('QR码图片加载成功:', e);
+    QRCodeHelper.handleQRCodeLoadSuccess(this, e);
   },
 
   /**
    * QR码图片加载失败
    */
   onQRImageError: function(e) {
-    console.error('QR码图片加载失败:', e);
-    this.setData({ qrcodeError: true });
-    wx.showToast({
-      title: 'QR码加载失败',
-      icon: 'none',
-      duration: 2000
-    });
+    QRCodeHelper.handleQRCodeLoadError(this, e, this.data.fishId);
   }
 })

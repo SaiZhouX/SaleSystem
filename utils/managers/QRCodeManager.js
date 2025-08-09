@@ -113,24 +113,26 @@ class QRCodeManager {
    * 处理扫码查询鱼信息
    */
   static async handleScanToFindFish() {
+    const ErrorHandler = require('../helpers/ErrorHandler.js');
+    const PageHelper = require('../helpers/PageHelper.js');
+    const QRCodeHelper = require('../helpers/QRCodeHelper.js');
+    
     try {
       const scanResult = await this.scanQRCode();
       
       if (!scanResult.success) {
-        wx.showToast({
-          title: '扫码失败',
-          icon: 'none'
-        });
+        ErrorHandler.showError('扫码失败');
         return { success: false, error: scanResult.error };
       }
 
       if (!scanResult.valid) {
-        wx.showToast({
-          title: '无效的QR码',
-          icon: 'none'
-        });
+        ErrorHandler.showError('无效的QR码');
         return { success: false, error: scanResult.message };
       }
+
+      // 解析QR码数据
+      const parseResult = QRCodeHelper.parseQRCodeData(scanResult.data);
+      let fishId = parseResult.success ? parseResult.fishId : scanResult.data;
 
       // 查找对应的鱼信息
       const DataManager = require('./DataManager.js');
@@ -138,44 +140,35 @@ class QRCodeManager {
       
       // 支持多种匹配方式：QR码数据、条形码（向后兼容）、鱼ID
       const foundFish = fishList.find(fish => 
-        fish.id === scanResult.data || 
+        fish.id === fishId || 
+        fish.id === scanResult.data ||
         fish.barcode === scanResult.data ||
         fish.qrcode === scanResult.data
       );
 
       if (foundFish) {
         // 跳转到鱼详情页面
-        wx.navigateTo({
-          url: `/pages/fish-detail/fish-detail?id=${foundFish.id}`
-        });
+        PageHelper.safeNavigate(`/pages/fish-detail/fish-detail?id=${foundFish.id}`, 0);
         return { success: true, fish: foundFish };
       } else {
-        wx.showToast({
-          title: '未找到该鱼的信息',
-          icon: 'none'
-        });
+        ErrorHandler.showError(APP_CONFIG.ERROR_MESSAGES.DATA_NOT_FOUND);
         return { success: false, error: '未找到对应的鱼信息' };
       }
 
     } catch (error) {
       console.error('扫码查询失败:', error);
-      wx.showToast({
-        title: '扫码查询失败',
-        icon: 'none'
-      });
+      ErrorHandler.showError('扫码查询失败');
       return { success: false, error: error.message };
     }
   }
 
   /**
    * 生成在线QR码图片URL（用于扫码测试页面）
+   * @deprecated 请使用 QRCodeHelper.generateOnlineQRCodeUrl 替代
    */
-  static generateOnlineQRCodeUrl(fishId, size = 200) {
-    const qrData = this.generateQRCodeData(fishId);
-    const encodedData = encodeURIComponent(qrData);
-    
-    // 使用QRCode Monkey API作为唯一的QR码生成接口
-    return `https://api.qrcode-monkey.com/qr/custom?data=${encodedData}&size=${size}&download=false`;
+  static generateOnlineQRCodeUrl(fishId, size = APP_CONFIG.QRCODE_SERVICE.DEFAULT_SIZE) {
+    const QRCodeHelper = require('../helpers/QRCodeHelper.js');
+    return QRCodeHelper.generateOnlineQRCodeUrl(fishId, size);
   }
 
   /**

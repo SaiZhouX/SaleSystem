@@ -4,6 +4,9 @@ const PhotoManager = require('../../utils/managers/PhotoManager.js');
 const QRCodeManager = require('../../utils/managers/QRCodeManager.js');
 const StatusManager = require('../../utils/managers/StatusManager.js');
 const FormValidator = require('../../utils/validators/FormValidator.js');
+const ErrorHandler = require('../../utils/helpers/ErrorHandler.js');
+const QRCodeHelper = require('../../utils/helpers/QRCodeHelper.js');
+const PageHelper = require('../../utils/helpers/PageHelper.js');
 const { APP_CONFIG } = require('../../utils/constants/AppConstants.js');
 
 Page({
@@ -25,36 +28,14 @@ Page({
     console.log('获取到的鱼信息:', fishInfo);
 
     if (fishInfo) {
-      this.setData({
-        fishInfo: fishInfo
-      }, () => {
-        // 优先使用保存的QR码在线URL
-        if (fishInfo.qrcodeUrl) {
-          console.log('使用保存的QR码在线URL:', fishInfo.qrcodeUrl);
-          this.setData({ qrcodeImageUrl: fishInfo.qrcodeUrl });
-        } 
-        // 兼容旧版本：检查是否有保存的QR码图片路径
-        else if (fishInfo.qrcodePath) {
-          console.log('使用保存的QR码图片路径:', fishInfo.qrcodePath);
-          this.setData({ qrcodeImageUrl: fishInfo.qrcodePath });
-        } 
-        // 如果都没有，则生成在线URL（兼容旧数据）
-        else if (fishInfo.qrcode || fishInfo.barcode || fishInfo.id) {
-          console.log('生成QR码在线URL作为兼容处理');
-          const qrcodeUrl = QRCodeManager.generateOnlineQRCodeUrl(fishInfo.id, 300);
-          this.setData({ qrcodeImageUrl: qrcodeUrl });
-        } else {
-          // 完全没有QR码信息
-          console.log('该鱼没有QR码信息，显示未生成提示');
-          this.setData({ qrcodeError: true });
-        }
-      });
+      this.setData({ fishInfo: fishInfo });
+      
+      // 使用统一的QR码显示工具
+      const existingQRCodeUrl = fishInfo.qrcodeUrl || fishInfo.qrcodePath;
+      QRCodeHelper.setupQRCodeDisplay(this, fishInfo.id, existingQRCodeUrl);
     } else {
-      wx.showToast({
-        title: '未找到该鱼的信息',
-        icon: 'none'
-      });
-      wx.navigateBack();
+      ErrorHandler.showError(APP_CONFIG.ERROR_MESSAGES.DATA_NOT_FOUND);
+      PageHelper.safeNavigate('', 0, 'navigateBack');
     }
   },
 
@@ -78,105 +59,71 @@ Page({
   },
 
   // 使用工具类处理销售
-  sellFish() {
-    wx.showModal({
+  async sellFish() {
+    const result = await ErrorHandler.showConfirm({
       title: '输入销售价格',
       editable: true,
-      placeholderText: '请输入销售价格',
-      success: (res) => {
-        if (res.confirm && res.content) {
-          // 使用表单验证工具类验证价格
-          const priceValidation = FormValidator.validateSellPrice(res.content);
-          
-          if (!priceValidation.valid) {
-            wx.showToast({ 
-              title: priceValidation.message, 
-              icon: 'none' 
-            });
-            return;
-          }
-
-          // 使用状态管理工具类更新状态
-          const result = StatusManager.handleStatusChange(
-            this.data.fishInfo.id,
-            APP_CONFIG.FISH_STATUS.SOLD,
-            { soldPrice: priceValidation.value }
-          );
-
-          if (result.success) {
-            this.setData({ fishInfo: result.fish });
-            wx.showToast({ 
-              title: '标记为已出售', 
-              icon: 'success',
-              success: () => {
-                setTimeout(() => {
-                  wx.navigateBack();
-                }, 1500);
-              }
-            });
-          } else {
-            wx.showToast({ 
-              title: result.error || '操作失败', 
-              icon: 'none' 
-            });
-          }
-        }
-      }
+      placeholderText: '请输入销售价格'
     });
+
+    if (result.confirmed && result.content) {
+      // 使用表单验证工具类验证价格
+      const priceValidation = FormValidator.validateSellPrice(result.content);
+      
+      if (!priceValidation.valid) {
+        ErrorHandler.showError(priceValidation.message);
+        return;
+      }
+
+      // 使用状态管理工具类更新状态
+      const updateResult = StatusManager.handleStatusChange(
+        this.data.fishInfo.id,
+        APP_CONFIG.FISH_STATUS.SOLD,
+        { soldPrice: priceValidation.value }
+      );
+
+      if (updateResult.success) {
+        this.setData({ fishInfo: updateResult.fish });
+        PageHelper.successAndBack(APP_CONFIG.SUCCESS_MESSAGES.SELL_SUCCESS);
+      } else {
+        ErrorHandler.showError(updateResult.error || APP_CONFIG.ERROR_MESSAGES.OPERATION_FAILED);
+      }
+    }
   },
 
   // 使用工具类处理死亡标记
-  markAsDead() {
-    wx.showModal({
-      title: '确认标记',
-      content: '确定要将此鱼标记为死亡吗？此操作不可撤销。',
-      success: (res) => {
-        if (res.confirm) {
-          // 使用状态管理工具类更新状态
-          const result = StatusManager.handleStatusChange(
-            this.data.fishInfo.id,
-            APP_CONFIG.FISH_STATUS.DEAD
-          );
+  async markAsDead() {
+    await PageHelper.handleConfirmAction(
+      '确认标记',
+      '确定要将此鱼标记为死亡吗？此操作不可撤销。',
+      async () => {
+        // 使用状态管理工具类更新状态
+        const result = StatusManager.handleStatusChange(
+          this.data.fishInfo.id,
+          APP_CONFIG.FISH_STATUS.DEAD
+        );
 
-          if (result.success) {
-            this.setData({ fishInfo: result.fish });
-            wx.showToast({ 
-              title: '已标记为死亡', 
-              icon: 'none',
-              success: () => {
-                setTimeout(() => {
-                  wx.navigateBack();
-                }, 1500);
-              }
-            });
-          } else {
-            wx.showToast({ 
-              title: result.error || '操作失败', 
-              icon: 'none' 
-            });
-          }
+        if (result.success) {
+          this.setData({ fishInfo: result.fish });
+          PageHelper.successAndBack(APP_CONFIG.SUCCESS_MESSAGES.MARK_DEAD_SUCCESS);
+        } else {
+          ErrorHandler.showError(result.error || APP_CONFIG.ERROR_MESSAGES.OPERATION_FAILED);
         }
       }
-    });
+    );
   },
 
   /**
    * QR码图片加载成功
    */
   onQRImageLoad: function(e) {
-    console.log('QR码图片加载成功:', e);
+    QRCodeHelper.handleQRCodeLoadSuccess(this, e);
   },
 
   /**
    * QR码图片加载失败
    */
   onQRImageError: function(e) {
-    console.error('QR码图片加载失败:', e);
-    this.setData({ qrcodeError: true });
-    wx.showToast({
-      title: 'QR码加载失败',
-      icon: 'none',
-      duration: 2000
-    });
+    QRCodeHelper.handleQRCodeLoadError(this, e, this.data.fishInfo?.id);
   }
 });
