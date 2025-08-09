@@ -177,6 +177,59 @@ class QRCodeManager {
     // 使用QRCode Monkey API作为唯一的QR码生成接口
     return `https://api.qrcode-monkey.com/qr/custom?data=${encodedData}&size=${size}&download=false`;
   }
+
+  /**
+   * 生成并保存QR码图片
+   * @param {string} fishId - 鱼的唯一ID
+   * @param {number} size - QR码大小
+   * @returns {Promise} - 返回包含临时文件路径的Promise
+   */
+  static generateAndSaveQRCode(fishId, size = 200) {
+    return new Promise((resolve, reject) => {
+      const qrCodeUrl = this.generateOnlineQRCodeUrl(fishId, size);
+      
+      wx.downloadFile({
+        url: qrCodeUrl,
+        success: function(res) {
+          if (res.statusCode === 200) {
+            // 将临时文件保存到本地存储
+            wx.saveFile({
+              tempFilePath: res.tempFilePath,
+              success: function(saveRes) {
+                console.log('QR码图片保存成功:', saveRes.savedFilePath);
+                resolve({
+                  success: true,
+                  qrcodePath: saveRes.savedFilePath
+                });
+              },
+              fail: function(error) {
+                console.error('QR码图片保存失败:', error);
+                // 如果保存失败，至少返回临时路径
+                resolve({
+                  success: false,
+                  qrcodePath: res.tempFilePath,
+                  error: error
+                });
+              }
+            });
+          } else {
+            console.error('QR码图片下载失败:', res.statusCode);
+            reject({
+              success: false,
+              error: '下载QR码图片失败: ' + res.statusCode
+            });
+          }
+        },
+        fail: function(error) {
+          console.error('QR码API请求失败:', error);
+          reject({
+            success: false,
+            error: 'QR码API请求失败: ' + error.errMsg
+          });
+        }
+      });
+    });
+  }
 }
 
 module.exports = QRCodeManager;

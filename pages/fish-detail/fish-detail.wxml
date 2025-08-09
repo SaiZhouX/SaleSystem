@@ -44,7 +44,10 @@
   <view class="qrcode-section" wx:if="{{fishInfo.qrcode || fishInfo.barcode || fishInfo.id}}">
     <view class="section-title">QR码</view>
     <image wx:if="{{qrcodeImageUrl}}" src="{{qrcodeImageUrl}}" class="qrcode-image" mode="aspectFit" bindload="onQRImageLoad" binderror="onQRImageError"></image>
-    <view class="qrcode-text" wx:if="{{qrcodeError}}">{{fishInfo.qrcode || fishInfo.barcode || fishInfo.id}}</view>
+    <view class="qrcode-text" wx:if="{{qrcodeError}}">
+      <text class="error-message">QR码未生成</text>
+      <text class="qrcode-id">ID: {{fishInfo.qrcode || fishInfo.barcode || fishInfo.id}}</text>
+    </view>
   </view>
 
   <!-- 操作按钮区域 - 只有未出售状态才显示 -->

@@ -26,10 +26,13 @@ Page({
       this.setData({
         fishInfo: fishInfo
       }, () => {
-        // 使用工具类生成在线QR码
-        if (fishInfo.qrcode || fishInfo.barcode || fishInfo.id) {
-          const qrcodeUrl = QRCodeManager.generateOnlineQRCodeUrl(fishInfo.id, 300);
-          this.setData({ qrcodeImageUrl: qrcodeUrl });
+        // 只使用保存的QR码图片路径
+        if (fishInfo.qrcodePath) {
+          this.setData({ qrcodeImageUrl: fishInfo.qrcodePath });
+        } else {
+          // 如果没有保存的QR码图片路径，则显示QR码未生成
+          this.setData({ qrcodeError: true });
+          console.log('该鱼没有保存QR码图片路径');
         }
       });
     } else {

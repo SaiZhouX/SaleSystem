@@ -122,36 +122,16 @@ Page({
   },
 
   scanCode: function() {
-    wx.scanCode({
-      success: (res) => {
-        const scannedData = res.result;
-        const fishList = DataManager.getFishList();
-        
-        // 支持多种匹配方式：QR码数据、条形码（向后兼容）、鱼ID
-        const foundFish = fishList.find(fish => 
-          fish.id === scannedData || 
-          fish.barcode === scannedData ||
-          fish.qrcode === scannedData
-        );
-
-        if (foundFish) {
-          wx.navigateTo({
-            url: `/pages/fish-detail/fish-detail?id=${foundFish.id}`
-          });
-        } else {
-          wx.showToast({
-            title: '未找到该鱼的信息',
-            icon: 'none'
-          });
+    const QRCodeManager = require('../../utils/managers/QRCodeManager.js');
+    QRCodeManager.handleScanToFindFish()
+      .then(result => {
+        if (!result.success) {
+          console.error('扫码查询失败:', result.error);
         }
-      },
-      fail: (err) => {
-        wx.showToast({
-          title: '扫码失败',
-          icon: 'none'
-        });
-      }
-    });
+      })
+      .catch(error => {
+        console.error('扫码查询异常:', error);
+      });
   },
 
   // 使用工具类清理所有数据

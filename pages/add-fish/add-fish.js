@@ -74,7 +74,7 @@ Page({
   },
 
   // 使用工具类处理表单提交
-  formSubmit(e) {
+  async formSubmit(e) {
     const { purchasePrice, purchaseDate } = e.detail.value;
 
     // 使用表单验证工具类
@@ -91,6 +91,18 @@ Page({
     this.setData({ submitting: true });
 
     try {
+      // 生成并保存QR码图片
+      let qrcodePath = '';
+      try {
+        const qrResult = await QRCodeManager.generateAndSaveQRCode(this.data.fishId, 300);
+        if (qrResult.success) {
+          qrcodePath = qrResult.qrcodePath;
+        }
+      } catch (qrError) {
+        console.error('生成QR码图片失败:', qrError);
+        // 继续执行，即使QR码生成失败
+      }
+
       // 创建新鱼信息对象
       const newFish = {
         id: this.data.fishId,
@@ -98,6 +110,7 @@ Page({
         purchase_date: validationResult.data.purchaseDate,
         purchasePrice: validationResult.data.purchasePrice,
         qrcode: this.data.qrcode,
+        qrcodePath: qrcodePath, // 保存QR码图片路径
         photoPath: this.data.photoPath || '',
         status: APP_CONFIG.FISH_STATUS.INSTOCK,
         timestamp: Date.now()
