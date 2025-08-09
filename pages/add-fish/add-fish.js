@@ -116,13 +116,24 @@ Page({
 
       console.log('准备保存的鱼信息:', newFish);
 
+      // 标记数据需要同步
+      newFish.needsSync = true;
+      newFish.lastModified = Date.now();
+
       // 使用数据管理工具类保存数据
       DataManager.addFish(newFish);
       
       console.log('鱼信息已保存到本地存储');
 
-      // 同步到服务器
-      this.syncToServer(newFish);
+      // 显示成功提示并返回
+      wx.showToast({ 
+        title: '添加成功', 
+        icon: 'success' 
+      });
+      
+      setTimeout(() => {
+        wx.navigateBack();
+      }, 1500);
 
     } catch (error) {
       console.error('添加鱼信息失败:', error);
@@ -130,36 +141,9 @@ Page({
         title: '添加失败', 
         icon: 'none' 
       });
+    } finally {
       this.setData({ submitting: false });
     }
-  },
-
-  // 同步数据到服务器
-  syncToServer(fishData) {
-    const api = require('../../utils/api.js');
-    
-    console.log('提交到服务器的数据:', fishData);
-    wx.request({
-      url: api.addFish,
-      method: 'POST',
-      data: fishData,
-      success: (res) => {
-        if (res.statusCode === 200) {
-          wx.showToast({ title: '添加成功', icon: 'success' });
-          setTimeout(() => wx.navigateBack(), 1500);
-        } else {
-          wx.showToast({ title: '服务器保存失败', icon: 'none' });
-          this.setData({ submitting: false });
-        }
-      },
-      fail: () => {
-        wx.showToast({ title: '网络错误，已保存到本地', icon: 'none' });
-        setTimeout(() => wx.navigateBack(), 1500);
-      },
-      complete: () => {
-        this.setData({ submitting: false });
-      }
-    });
   },
 
   /**

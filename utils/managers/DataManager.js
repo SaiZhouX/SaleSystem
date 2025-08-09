@@ -23,13 +23,24 @@ class DataManager {
    */
   static addFish(fishData) {
     const fishList = this.getFishList();
-    fishList.push(fishData);
+    
+    // 确保新数据有同步标记
+    const fishWithSyncInfo = {
+      ...fishData,
+      needsSync: true,
+      lastModified: Date.now()
+    };
+    
+    fishList.push(fishWithSyncInfo);
     this.saveFishList(fishList);
     
     // 同步更新支出记录
     this.updateExpense(fishData.purchasePrice, fishData.purchase_date, '鱼进货');
     
-    return fishData;
+    // 标记财务数据需要同步
+    this.markFinancialDataForSync();
+    
+    return fishWithSyncInfo;
   }
 
   /**
@@ -51,28 +62,6 @@ class DataManager {
     return fishDataList;
   }
 
-  /**
-   * 更新鱼信息状态
-   */
-  static updateFishStatus(fishId, status, additionalData = {}) {
-    const fishList = this.getFishList();
-    const fishIndex = fishList.findIndex(fish => fish.id === fishId);
-    
-    if (fishIndex > -1) {
-      fishList[fishIndex].status = status;
-      Object.assign(fishList[fishIndex], additionalData);
-      
-      // 如果是销售状态，更新收入
-      if (status === APP_CONFIG.FISH_STATUS.SOLD && additionalData.soldPrice) {
-        this.updateIncome(additionalData.soldPrice);
-      }
-      
-      this.saveFishList(fishList);
-      return fishList[fishIndex];
-    }
-    
-    return null;
-  }
 
   /**
    * 根据ID获取鱼信息
@@ -181,6 +170,48 @@ class DataManager {
       totalIncome: wx.getStorageSync(APP_CONFIG.STORAGE_KEYS.TOTAL_INCOME) || 0,
       totalExpense: wx.getStorageSync(APP_CONFIG.STORAGE_KEYS.TOTAL_EXPENSE) || 0
     };
+  }
+
+  /**
+   * 标记财务数据需要同步
+   */
+  static markFinancialDataForSync() {
+    const currentFinancial = this.getFinancialSummary();
+    const financialSyncStatus = {
+      ...currentFinancial,
+      needsSync: true,
+      lastModified: Date.now()
+    };
+    wx.setStorageSync(APP_CONFIG.STORAGE_KEYS.FINANCIAL_SYNC_STATUS, financialSyncStatus);
+  }
+
+  /**
+   * 更新鱼信息状态（添加同步标记）
+   */
+  static updateFishStatus(fishId, status, additionalData = {}) {
+    const fishList = this.getFishList();
+    const fishIndex = fishList.findIndex(fish => fish.id === fishId);
+    
+    if (fishIndex > -1) {
+      fishList[fishIndex].status = status;
+      fishList[fishIndex].needsSync = true;
+      fishList[fishIndex].lastModified = Date.now();
+      Object.assign(fishList[fishIndex], additionalData);
+      
+      // 如果是销售状态，更新收入
+      if (status === APP_CONFIG.FISH_STATUS.SOLD && additionalData.soldPrice) {
+        this.updateIncome(additionalData.soldPrice);
+      }
+      
+      this.saveFishList(fishList);
+      
+      // 标记财务数据需要同步
+      this.markFinancialDataForSync();
+      
+      return fishList[fishIndex];
+    }
+    
+    return null;
   }
 }
 

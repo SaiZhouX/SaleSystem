@@ -2,6 +2,7 @@
 .container {
   background-color: #f4f4f4;
   min-height: 100vh;
+  padding-bottom: 120rpx;
 }
 
 .user-info {
@@ -33,8 +34,198 @@
   color: #333;
 }
 
+/* 财务汇总样式 */
+.financial-summary {
+  background-color: #fff;
+  margin: 0 20rpx 20rpx;
+  border-radius: 16rpx;
+  padding: 30rpx;
+}
+
+.summary-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20rpx;
+  text-align: center;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.summary-item {
+  flex: 1;
+  text-align: center;
+  padding: 20rpx 10rpx;
+  border-radius: 12rpx;
+  margin: 0 5rpx;
+}
+
+.summary-item.income {
+  background-color: #e8f5e8;
+}
+
+.summary-item.expense {
+  background-color: #ffeaea;
+}
+
+.summary-item.profit.positive {
+  background-color: #e8f5e8;
+}
+
+.summary-item.profit.negative {
+  background-color: #ffeaea;
+}
+
+.summary-item .label {
+  display: block;
+  font-size: 24rpx;
+  color: #666;
+  margin-bottom: 8rpx;
+}
+
+.summary-item .value {
+  display: block;
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.summary-item.income .value {
+  color: #1aad19;
+}
+
+.summary-item.expense .value {
+  color: #e74c3c;
+}
+
+.summary-item.profit.positive .value {
+  color: #1aad19;
+}
+
+.summary-item.profit.negative .value {
+  color: #e74c3c;
+}
+
+/* 服务器状态样式 */
+.server-status {
+  background-color: #fff;
+  margin: 0 20rpx 20rpx;
+  border-radius: 16rpx;
+  padding: 30rpx;
+}
+
+.status-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.status-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.refresh-btn {
+  font-size: 24rpx;
+  color: #3498db;
+  padding: 8rpx 16rpx;
+  border: 1rpx solid #3498db;
+  border-radius: 20rpx;
+}
+
+.status-info {
+  margin-bottom: 30rpx;
+}
+
+.status-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.status-row:last-child {
+  border-bottom: none;
+}
+
+.status-label {
+  font-size: 28rpx;
+  color: #666;
+}
+
+.status-value {
+  font-size: 28rpx;
+  color: #333;
+}
+
+.status-value.connected {
+  color: #1aad19;
+}
+
+.status-value.disconnected {
+  color: #e74c3c;
+}
+
+.status-value.pending-count {
+  color: #f39c12;
+  font-weight: bold;
+}
+
+/* 同步按钮样式 */
+.sync-button-container {
+  margin-bottom: 20rpx;
+}
+
+.sync-button {
+  width: 100%;
+  height: 80rpx;
+  border-radius: 12rpx;
+  font-size: 28rpx;
+  font-weight: bold;
+  border: none;
+}
+
+.sync-button.enabled {
+  background-color: #1aad19;
+  color: #fff;
+}
+
+.sync-button.disabled {
+  background-color: #ccc;
+  color: #999;
+}
+
+/* 进度条样式 */
+.progress-container {
+  margin-top: 20rpx;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8rpx;
+  background-color: #f0f0f0;
+  border-radius: 4rpx;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background-color: #1aad19;
+  border-radius: 4rpx;
+  transition: width 0.3s ease;
+}
+
+/* 菜单列表样式 */
 .menu-list {
   background-color: #fff;
+  margin: 0 20rpx;
+  border-radius: 16rpx;
 }
 
 .menu-item {

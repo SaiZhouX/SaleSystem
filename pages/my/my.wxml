@@ -1,15 +1,55 @@
 <!--pages/my/my.wxml-->
 <view class="container">
-  <view class="user-info">
-    <button wx:if="{{!hasUserInfo && canIUseGetUserProfile}}" class="avatar-wrapper" open-type="getUserInfo" bindgetuserinfo="getUserProfile">
-      <image class="avatar" src="/images/default_avatar.png"></image>
-    </button>
-    <block wx:else>
-      <image bindtap="bindViewTap" class="avatar" src="{{userInfo.avatarUrl}}" mode="cover"></image>
-      <text class="nickname">{{userInfo.nickName}}</text>
-    </block>
+
+
+  <!-- 服务器状态区域 -->
+  <view class="server-status">
+    <view class="status-header">
+      <text class="status-title">🌐 服务器状态</text>
+      <text class="refresh-btn" bindtap="refreshServerStatus">刷新</text>
+    </view>
+    
+    <view class="status-info">
+      <view class="status-row">
+        <text class="status-label">连接状态:</text>
+        <text class="status-value {{serverConnected ? 'connected' : 'disconnected'}}">
+          {{serverConnected ? '● 已连接' : '○ 未连接'}}
+        </text>
+      </view>
+      
+      <view class="status-row">
+        <text class="status-label">最后同步:</text>
+        <text class="status-value">{{lastSyncFormatted}}</text>
+      </view>
+      
+      <view class="status-row">
+        <text class="status-label">待同步数据:</text>
+        <text class="status-value pending-count">{{pendingCount}}条</text>
+      </view>
+    </view>
+
+    <!-- 同步按钮 -->
+    <view class="sync-button-container">
+      <button 
+        class="sync-button {{serverConnected && !syncing ? 'enabled' : 'disabled'}}" 
+        bindtap="syncDataToServer"
+        disabled="{{!serverConnected || syncing}}"
+      >
+        <text wx:if="{{syncing}}">正在同步... {{syncProgress}}%</text>
+        <text wx:elif="{{serverConnected}}">上传数据到服务器</text>
+        <text wx:else>服务器未连接</text>
+      </button>
+    </view>
+
+    <!-- 同步进度条 -->
+    <view class="progress-container" wx:if="{{syncing}}">
+      <view class="progress-bar">
+        <view class="progress-fill" style="width: {{syncProgress}}%"></view>
+      </view>
+    </view>
   </view>
 
+  <!-- 功能菜单区域 -->
   <view class="menu-list">
     <view class="menu-item">
       <text>关于我们</text>

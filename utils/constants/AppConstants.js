@@ -10,7 +10,10 @@ const APP_CONFIG = {
     FISH_LIST: 'fishList',
     TOTAL_INCOME: 'totalIncome',
     TOTAL_EXPENSE: 'totalExpense',
-    EXPENSE_LIST: 'expenseList'
+    EXPENSE_LIST: 'expenseList',
+    SERVER_CONNECTION_STATUS: 'serverConnectionStatus',
+    LAST_SYNC_TIME: 'lastSyncTime',
+    FINANCIAL_SYNC_STATUS: 'financialSyncStatus'
   },
   
   // 鱼的状态

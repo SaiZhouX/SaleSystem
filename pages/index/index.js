@@ -115,11 +115,6 @@ Page({
     });
   },
 
-  goToScanTest() {
-    wx.navigateTo({
-      url: '/pages/scan-test/scan-test'
-    });
-  },
 
   scanCode: function() {
     const QRCodeManager = require('../../utils/managers/QRCodeManager.js');
@@ -136,35 +131,43 @@ Page({
 
   // 使用工具类清理所有数据
   clearAllData() {
-    wx.showModal({
-      title: '确认清理',
-      content: '确定要清除所有数据吗？此操作将删除所有鱼信息、收入和支出记录，不可恢复。',
-      success: (res) => {
-        if (res.confirm) {
-          // 使用数据管理工具类清除所有数据
-          DataManager.clearAllData();
-          
-          // 更新页面数据
-          this.setData({
-            fishList: [],
-            filteredFishList: [],
-            totalIncome: '0.00',
-            totalExpense: '0.00',
-            maskedIncome: '******',
-            maskedExpense: '******',
-            showRealAmount: false
-          });
-          
-          // 重置安全状态
-          SecurityManager.resetSecurityState();
-          
-          wx.showToast({
-            title: '所有数据已清除',
-            icon: 'success'
-          });
-        }
-      }
-    });
+    // 先进行人脸验证
+    SecurityManager.performFaceID()
+      .then(() => {
+        // 验证成功后显示确认对话框
+        wx.showModal({
+          title: '确认清理',
+          content: '确定要清除所有数据吗？此操作将删除所有鱼信息、收入和支出记录，不可恢复。',
+          success: (res) => {
+            if (res.confirm) {
+              // 使用数据管理工具类清除所有数据
+              DataManager.clearAllData();
+              
+              // 更新页面数据
+              this.setData({
+                fishList: [],
+                filteredFishList: [],
+                totalIncome: '0.00',
+                totalExpense: '0.00',
+                maskedIncome: '******',
+                maskedExpense: '******',
+                showRealAmount: false
+              });
+              
+              // 重置安全状态
+              SecurityManager.resetSecurityState();
+              
+              wx.showToast({
+                title: '所有数据已清除',
+                icon: 'success'
+              });
+            }
+          }
+        });
+      })
+      .catch(err => {
+        console.error('验证失败，无法清理数据', err);
+      });
   },
   
   /**

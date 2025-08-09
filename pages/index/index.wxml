@@ -26,7 +26,6 @@
 
   <view class="scan-button-container">
     <button class="scan-button" bindtap="scanCode">扫码查询</button>
-    <button class="test-button" bindtap="goToScanTest">扫码测试</button>
     <button class="list-button" bindtap="goToFishList">信息列表</button>
     <button class="cleanup-button" bindtap="clearAllData">清理所有</button>
   </view>
