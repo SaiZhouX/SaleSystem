@@ -12,19 +12,50 @@ class QRCodeHelper {
    * @param {string} qrcodeUrl - 已有的QR码URL（可选）
    */
   static setupQRCodeDisplay(pageInstance, fishId, qrcodeUrl = null) {
-    if (qrcodeUrl) {
-      // 使用已有的QR码URL
+    try {
+      if (qrcodeUrl) {
+        // 使用已有的QR码URL
+        pageInstance.setData({ 
+          qrcodeImageUrl: qrcodeUrl,
+          qrcodeError: false 
+        });
+      } else {
+        // 生成新的QR码URL
+        const generatedUrl = this.generateOnlineQRCodeUrl(fishId);
+        console.log('生成的QR码URL:', generatedUrl);
+        pageInstance.setData({ 
+          qrcodeImageUrl: generatedUrl,
+          qrcodeError: false 
+        });
+      }
+    } catch (error) {
+      console.error('QR码显示设置失败:', error);
       pageInstance.setData({ 
-        qrcodeImageUrl: qrcodeUrl,
-        qrcodeError: false 
+        qrcodeError: true,
+        qrcodeImageUrl: ''
       });
-    } else {
-      // 生成新的QR码URL
-      const generatedUrl = this.generateOnlineQRCodeUrl(fishId);
-      pageInstance.setData({ 
-        qrcodeImageUrl: generatedUrl,
-        qrcodeError: false 
+      
+      // 尝试使用canvas备用方案
+      this.fallbackToCanvas(pageInstance, fishId);
+    }
+  }
+
+  /**
+   * 备用方案：使用canvas生成QR码
+   * @param {Object} pageInstance - 页面实例
+   * @param {string} fishId - 鱼ID
+   */
+  static fallbackToCanvas(pageInstance, fishId) {
+    try {
+      const QRCodeManager = require('../managers/QRCodeManager.js');
+      QRCodeManager.initQRCodeDisplay('qrcode', fishId, (result) => {
+        if (!result.success) {
+          pageInstance.setData({ qrcodeError: true });
+        }
       });
+    } catch (error) {
+      console.error('Canvas备用方案也失败:', error);
+      pageInstance.setData({ qrcodeError: true });
     }
   }
 
@@ -34,15 +65,21 @@ class QRCodeHelper {
    * @param {number} size - QR码尺寸
    * @returns {string} QR码URL
    */
-  static generateOnlineQRCodeUrl(data, size = APP_CONFIG.QRCODE_SERVICE.DEFAULT_SIZE) {
-    // 确保尺寸在合理范围内
-    const validSize = Math.max(
-      APP_CONFIG.QRCODE_SERVICE.MIN_SIZE,
-      Math.min(size, APP_CONFIG.QRCODE_SERVICE.MAX_SIZE)
-    );
-
-    const encodedData = encodeURIComponent(data);
-    return `${APP_CONFIG.QRCODE_SERVICE.PRIMARY_URL}?size=${validSize}x${validSize}&data=${encodedData}`;
+  static generateOnlineQRCodeUrl(data, size = 300) {
+    try {
+      // 确保尺寸在合理范围内
+      const validSize = Math.max(100, Math.min(size, 1000));
+      const encodedData = encodeURIComponent(data);
+      
+      // 使用QRCode Monkey API（与原始QRCodeManager保持一致）
+      const url = `https://api.qrcode-monkey.com/qr/custom?data=${encodedData}&size=${validSize}&download=false`;
+      console.log('生成QR码URL:', url);
+      return url;
+    } catch (error) {
+      console.error('生成QR码URL失败:', error);
+      // 返回备用URL
+      return this.getBackupQRCodeUrl(data, size);
+    }
   }
 
   /**
@@ -51,9 +88,17 @@ class QRCodeHelper {
    * @param {number} size - QR码尺寸
    * @returns {string} 备用QR码URL
    */
-  static getBackupQRCodeUrl(data, size = APP_CONFIG.QRCODE_SERVICE.DEFAULT_SIZE) {
-    const encodedData = encodeURIComponent(data);
-    return APP_CONFIG.QRCODE_SERVICE.BACKUP_URL.replace('{size}', size) + encodedData;
+  static getBackupQRCodeUrl(data, size = 300) {
+    try {
+      const encodedData = encodeURIComponent(data);
+      // 使用QR Server API作为备用
+      return `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodedData}`;
+    } catch (error) {
+      console.error('生成备用QR码URL失败:', error);
+      // 最后的备用方案：使用Google Charts API
+      const encodedData = encodeURIComponent(data);
+      return `https://chart.googleapis.com/chart?chs=${size}x${size}&cht=qr&chl=${encodedData}`;
+    }
   }
 
   /**
@@ -96,7 +141,8 @@ class QRCodeHelper {
    * @returns {string} QR码数据
    */
   static generateQRCodeData(fishId) {
-    return `FISH_${fishId}_${Date.now()}`;
+    // 直接使用鱼的完整唯一ID作为QR码内容，保持与原QRCodeManager一致
+    return fishId;
   }
 
   /**

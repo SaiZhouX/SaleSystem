@@ -26,7 +26,7 @@ Page({
     // 使用工具类生成ID和批次号
     const fishId = DataManager.generateFishId();
     const batchNumber = DataManager.generateBatchNumber();
-    const qrcode = QRCodeHelper.generateQRCodeData(fishId);
+    const qrcode = QRCodeManager.generateQRCodeData(fishId);
     
     this.setData({
       fishId: fishId,
@@ -35,8 +35,10 @@ Page({
       purchaseDate: DateHelper.getCurrentDate()
     });
 
-    // 使用统一的QR码显示工具
-    QRCodeHelper.setupQRCodeDisplay(this, fishId);
+    // 使用统一的QR码显示工具，延迟执行确保页面已渲染
+    setTimeout(() => {
+      QRCodeHelper.setupQRCodeDisplay(this, fishId);
+    }, 100);
   },
 
   navigateToBatchAddFish() {
