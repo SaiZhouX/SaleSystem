@@ -154,27 +154,38 @@ class PhotoManager {
 
   /**
    * 处理拍照流程（包含拍照、保存、上传）
+   * @param {string} fishId - 鱼的ID
+   * @param {boolean} saveToDatabase - 是否保存到数据库（默认true）
    */
-  static async handleTakePhoto(fishId) {
+  static async handleTakePhoto(fishId, saveToDatabase = true) {
     try {
       // 1. 拍照或选择照片
       const photoPath = await this.takePhoto();
       
-      // 2. 保存照片到鱼信息
-      const result = await this.savePhotoToFish(fishId, photoPath);
-      
-      if (result.success) {
+      if (saveToDatabase) {
+        // 2. 保存照片到鱼信息（用于详情页面）
+        const result = await this.savePhotoToFish(fishId, photoPath);
+        
+        if (result.success) {
+          wx.showToast({ 
+            title: '照片已保存', 
+            icon: 'success' 
+          });
+          return { success: true, fish: result.fish, photoPath: photoPath };
+        } else {
+          wx.showToast({
+            title: '保存失败',
+            icon: 'none'
+          });
+          return { success: false, error: result.error };
+        }
+      } else {
+        // 直接返回照片路径（用于添加页面）
         wx.showToast({ 
-          title: '照片已保存', 
+          title: '照片已选择', 
           icon: 'success' 
         });
-        return { success: true, fish: result.fish };
-      } else {
-        wx.showToast({
-          title: '保存失败',
-          icon: 'none'
-        });
-        return { success: false, error: result.error };
+        return { success: true, photoPath: photoPath };
       }
       
     } catch (error) {
@@ -185,6 +196,20 @@ class PhotoManager {
       });
       return { success: false, error: error.message };
     }
+  }
+
+  /**
+   * 简化的拍照处理（仅用于添加页面）
+   */
+  static async handleTakePhotoForAdd(fishId) {
+    return await this.handleTakePhoto(fishId, false);
+  }
+
+  /**
+   * 完整的拍照处理（用于详情页面）
+   */
+  static async handleTakePhotoForDetail(fishId) {
+    return await this.handleTakePhoto(fishId, true);
   }
 }
 

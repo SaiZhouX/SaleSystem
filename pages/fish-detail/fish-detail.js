@@ -58,10 +58,10 @@ Page({
     }
   },
 
-  // 使用工具类处理拍照
+  // 使用工具类处理拍照（详情页面专用）
   async takePhoto() {
     try {
-      const result = await PhotoManager.handleTakePhoto(this.data.fishInfo.id);
+      const result = await PhotoManager.handleTakePhotoForDetail(this.data.fishInfo.id);
       if (result.success) {
         this.setData({
           'fishInfo.photoPath': result.fish.photoPath

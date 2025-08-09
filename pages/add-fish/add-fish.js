@@ -54,13 +54,13 @@ Page({
     });
   },
 
-  // 使用工具类处理拍照
+  // 使用工具类处理拍照（添加页面专用）
   async takePhoto() {
     try {
-      const result = await PhotoManager.handleTakePhoto(this.data.fishId);
+      const result = await PhotoManager.handleTakePhotoForAdd(this.data.fishId);
       if (result.success) {
         this.setData({
-          photoPath: result.fish.photoPath
+          photoPath: result.photoPath
         });
       }
     } catch (error) {
